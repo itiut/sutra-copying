@@ -1,3 +1,4 @@
+#include "bitmap.h"
 #include "img32.h"
 
 CImage32::CImage32(void *dummy) {

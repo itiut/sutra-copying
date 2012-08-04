@@ -2,11 +2,9 @@
 #define _BITMAP_H_
 
 #ifdef WIN32
-/* Windowsでは windows.h をインクルード */
 #include <windows.h>
 
 #else
-/* Linuxでは構造体を自分で定義 */
 
 typedef unsigned char BYTE;
 typedef long LONG;

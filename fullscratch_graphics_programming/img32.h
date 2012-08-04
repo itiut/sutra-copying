@@ -1,7 +1,7 @@
 #ifndef _IMG32_H_
 #define _IMG32_H_
 
-#include <bitmap.h>
+#include "bitmap.h"
 
 class CImage32
 {
