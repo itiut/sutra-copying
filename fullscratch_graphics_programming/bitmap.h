@@ -7,9 +7,9 @@
 #else
 
 typedef unsigned char BYTE;
-typedef long LONG;
+typedef int LONG;
 typedef unsigned short WORD;
-typedef unsigned long DWORD;
+typedef unsigned int DWORD;
 
 typedef struct tagRGBQUAD {
     BYTE rgbBlue;

@@ -1,16 +1,16 @@
-#include "bitmap.h"
+#include <cstdlib>
 #include "img32.h"
 
 CImage32::CImage32(void *dummy) {
 }
 
 CImage32::CImage32(int width, int height) {
-    m_buffer = NULL;
+    buffer_ = NULL;
     Resize(width, height);
 }
 
 CImage32::CImage32() {
-    m_buffer = NULL;
+    buffer_ = NULL;
     Resize(8, 8);
 }
 
@@ -19,34 +19,34 @@ CImage32::~CImage32() {
 }
 
 void CImage32::Free() {
-    if (m_buffer != NULL) {
-        free(m_buffer);
-        m_buffer = NULL;
+    if (buffer_ != NULL) {
+        free(buffer_);
+        buffer_ = NULL;
     }
 }
 
 void CImage32::Resize(int width, int height) {
     Free();
-    m_width = width;
-    m_height = height;
-    m_buffer = malloc(width * height * sizeof(DWORD));
+    width_ = width;
+    height_ = height;
+    buffer_ = malloc(sizeof(DWORD) * width * height);
 }
 
 void *CImage32::PixelAddress(int x, int y) {
-    if (x < 0 || m_width <= x || y < 0 || m_height <= y) {
+    if (x < 0 || width_ <= x || y < 0 || height_ <= y) {
         return NULL;
     }
     return PixelAddressNC(x, y);
 }
 
 const void *CImage32::PixelAddress(int x, int y) const {
-    if (x < 0 || m_width <= x || y < 0 || m_height <= y) {
+    if (x < 0 || width_ <= x || y < 0 || height_ <= y) {
         return NULL;
     }
     return PixelAddressNC(x, y);
 }
 
-void CImage32::PixelSet(int x, int y, int color) {
+void CImage32::PixelSet(int x, int y, DWORD color) {
     DWORD *ptr = (DWORD *) PixelAddress(x, y);
     if (ptr == NULL) {
         return;
@@ -54,7 +54,7 @@ void CImage32::PixelSet(int x, int y, int color) {
     *ptr = color;
 }
 
-void CImage32::PixelSetNC(int x, int y, int color) {
+void CImage32::PixelSetNC(int x, int y, DWORD color) {
     DWORD *ptr = (DWORD *) PixelAddressNC(x, y);
     *ptr = color;
 }
