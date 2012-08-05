@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <sys/types.h>
+#include <sys/stat.h>
 #include <dirent.h>
 
 static void do_traverse(const char *path);
@@ -39,4 +40,5 @@ static void do_traverse(const char *path) {
             }
         }
     }
+    closedir(dir);
 }
