@@ -45,6 +45,13 @@ typedef struct tagBITMAPINFO {
     RGBQUAD          bmiColors[1];
 } BITMAPINFO, *PBITMAPINFO;
 
+union TARGB {
+    DWORD ARGB;
+    struct {
+        BYTE B, G, R, A;
+    };
+};
+
 #endif  /* WIN32 */
 
 #endif  /* _BITMAP_H_ */
