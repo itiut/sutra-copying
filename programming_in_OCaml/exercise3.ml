@@ -53,3 +53,70 @@ let bmi_message (name, height, weight) =
 
 let f (sum, diff) =
   ((sum + diff) / 2, (sum - diff) / 2);;
+
+
+(* exe3.7 *)
+let rec pow_1 (x, n) =
+  if n = 0 then 1.0 else x *. pow_1 (x, n - 1);;
+
+let rec pow_2 (x, n) =
+  if n = 0 then 1.0
+  else if n mod 2 = 0 then pow_2 (x ** 2.0, n / 2)
+  else x *. pow_2 (x ** 2.0, (n - 1) / 2);;
+
+
+(* exe3.8 *)
+let rec pow_3 (x, n) =
+  let rec iterpow (i, res) =
+    if i > n then res
+    else iterpow (i + 1, res * x)
+  in
+  iterpow (1, 1);;
+
+
+(* exe3.11 *)
+let rec gcd (m, n) =
+  let (m, n) = if m >= n then (m, n) else (n, m) in
+  if n = 0 then m else gcd (n, m mod n);;
+
+let rec comb (n, m) =
+  if m = 0 || m = n then 1
+  else comb (n - 1, m) + comb (n - 1, m - 1);;
+
+let fib n =
+  let rec iterfib (i, n, f1, f2) =
+    if i > n then f2
+    else iterfib (i + 1, n, f1 + f2, f1)
+  in
+  iterfib (1, n, 1, 0);;
+
+let max_ascii str =
+  let n = String.length str in
+  let rec iter_max_ascii (i, max_char) =
+    if i >= n then max_char
+    else let max_char = if str.[i] > max_char then str.[i] else max_char in
+         iter_max_ascii (i + 1, max_char)
+  in
+  iter_max_ascii (0, '\000');;
+
+
+(* exe3.12 *)
+let rec pos n =
+  if n < 0 then 0.0
+  else pos (n - 1) +. 1.0 /. (float_of_int (4 * n + 1)) -. 1.0 /. (float_of_int (4 * n + 3));;
+
+
+(* exe3.13 *)
+let pow_curry n =
+  fun x -> pow_2 (x, n);;
+
+let cube = pow_curry 3;;
+
+
+(* exe3.14 *)
+let integral f a b =
+  let dx = 1e-5 in
+  let rec loop x res =
+    if x > b then res
+    else loop (x +. dx) (res +.(f x +. f (x +. dx)) *. dx /. 2.0)
+  in loop a 0.0;;
