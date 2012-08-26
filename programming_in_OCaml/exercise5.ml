@@ -35,7 +35,6 @@ let rec downto1 = function
   | n when n <= 1 -> [1]
   | n -> n :: downto1 (n - 1);;
 
-
 let rec roman l n =
   match l with
     | [] -> ""
@@ -129,3 +128,39 @@ let exists p l =
 
 
 (* exercise 5.6 *)
+let rec quick_sort_2 list sorted =
+  match list with
+    | [] -> sorted
+    | [elem] -> elem :: sorted
+    | pivot :: rest ->
+       let rec partition left right = function
+         | [] -> (left, right)
+         | y :: ys ->
+            if y < pivot then partition (y :: left) right ys
+            else partition left (y :: right) ys
+       in
+       let (left, right) = partition [] [] rest in
+       quick_sort_2 left (pivot :: quick_sort_2 right sorted);;
+
+
+(* exercise 5.7 *)
+let squares r =
+  let is_int x = x = float_of_int (int_of_float x) in
+  let calc_float_x y = (float_of_int r -. (float_of_int y) ** 2.) ** 0.5 in
+  let y_end = (float_of_int r /. 2.) ** 0.5 in
+  let rec make_pair y pairs =
+    if float_of_int y >= y_end then
+      pairs
+    else
+      let float_x = calc_float_x y in
+      let pairs = if is_int float_x then (int_of_float float_x, y) :: pairs else pairs in
+      make_pair (y + 1) pairs
+  in make_pair 1 [];;
+
+
+(* exercise 5.8 *)
+let map2 f l =
+  let rec rec_map rev_applied = function
+    | [] -> List.rev rev_applied
+    | car :: cdr -> rec_map ((f car) :: rev_applied) cdr
+  in rec_map [] l;;
