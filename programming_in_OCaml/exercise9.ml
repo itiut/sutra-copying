@@ -81,4 +81,32 @@ module type TABLE2 =
 module Table2 : TABLE2 = Table;;
 
 
-(* exercise 9.1 *)
+(* exercise 9.3 *)
+module type QUEUE =
+  sig
+    type 'a t
+    exception Empty
+    val empty: 'a t
+    val add: 'a t -> 'a -> 'a t
+    val take: 'a t -> 'a * 'a t
+    val peek: 'a t -> 'a
+  end;;
+
+module Queue1 : QUEUE =
+  struct
+    type 'a t = 'a list
+
+    exception Empty
+
+    let empty = []
+
+    let add l a = l @ [a]
+
+    let take = function
+      | [] -> raise Empty
+      | car :: cdr -> (car, cdr)
+
+    let peek = function
+      | [] -> raise Empty
+      | car :: _ -> car
+  end;;
