@@ -4,7 +4,7 @@
 #include "bitmap.h"
 #include "jpeg.h"
 
-bool LoadJpeg(CimageDIB *pImage, const char *filename) {
+bool LoadJpeg(CImageDIB *pImage, const char *filename) {
     if (pImage == NULL || filename == NULL) {
         return false;
     }
@@ -17,11 +17,11 @@ bool LoadJpeg(CimageDIB *pImage, const char *filename) {
     struct jpeg_decompress_struct cinfo;
     struct jpeg_error_mgr jerr;
 
-    cinfo.err = jpeg_std_err(&jerr);
+    cinfo.err = jpeg_std_error(&jerr);
     jpeg_create_decompress(&cinfo);
 
     jpeg_stdio_src(&cinfo, fp);
-    jpeg_read_header(&cinfo TRUE);
+    jpeg_read_header(&cinfo, TRUE);
     jpeg_start_decompress(&cinfo);
 
     int row_stride = cinfo.output_width * cinfo.output_components;
@@ -35,7 +35,7 @@ bool LoadJpeg(CimageDIB *pImage, const char *filename) {
         JSAMPROW pBuf = *ppBuffer;
         for (unsigned int x = 0; x < cinfo.output_width; x++) {
             TARGB pixel;
-            if (cinfo.output_color_components == 3) {
+            if (cinfo.out_color_components == 3) {
                 pixel.R = *pBuf++;
                 pixel.G = *pBuf++;
                 pixel.B = *pBuf++;
@@ -49,13 +49,13 @@ bool LoadJpeg(CimageDIB *pImage, const char *filename) {
     }
 
     jpeg_finish_decompress(&cinfo);
-    jpeg_destory_decompress(&cinfo);
+    jpeg_destroy_decompress(&cinfo);
     fclose(fp);
 
     return true;
 }
 
-bool SaveJpeg24(const CImage32 *pImage, const char *filename, int quality) {
+bool SaveJpeg24(const CImageDIB *pImage, const char *filename, int quality) {
     if (pImage == NULL || filename == NULL) {
         return false;
     }
@@ -68,14 +68,14 @@ bool SaveJpeg24(const CImage32 *pImage, const char *filename, int quality) {
     struct jpeg_compress_struct cinfo;
     struct jpeg_error_mgr jerr;
 
-    cinfo.err = jpeg_std_err(&cinfo);
+    cinfo.err = jpeg_std_error(&jerr);
     jpeg_create_compress(&cinfo);
-    jpeg_stdio_dest(&cifo, fp);
+    jpeg_stdio_dest(&cinfo, fp);
 
     cinfo.image_width = pImage->Width();
     cinfo.image_height = pImage->Height();
     cinfo.input_components = 3;
-    cinfo_in_color_space = JCS_RGB;
+    cinfo.in_color_space = JCS_RGB;
     jpeg_set_defaults(&cinfo);
     jpeg_set_quality(&cinfo, quality, TRUE);
 
@@ -83,9 +83,9 @@ bool SaveJpeg24(const CImage32 *pImage, const char *filename, int quality) {
 
     unsigned int y = 0;
     JSAMPROW pRow = new JSAMPLE[pImage->Width() * 3];
-    while (cinfo.nest_scanline < cinfo.image_height) {
+    while (cinfo.next_scanline < cinfo.image_height) {
         JSAMPROW pBuf = pRow;
-        for (unsigned int x = 0; x < pImage->Width(); x++) {
+        for (int x = 0; x < pImage->Width(); x++) {
             TARGB pixel;
             *pBuf++ = pixel.R;
             *pBuf++ = pixel.G;
