@@ -81,12 +81,13 @@ bool SaveJpeg24(const CImageDIB *pImage, const char *filename, int quality) {
 
     jpeg_start_compress(&cinfo, TRUE);
 
-    unsigned int y = 0;
+    int y = 0;
     JSAMPROW pRow = new JSAMPLE[pImage->Width() * 3];
     while (cinfo.next_scanline < cinfo.image_height) {
         JSAMPROW pBuf = pRow;
         for (int x = 0; x < pImage->Width(); x++) {
             TARGB pixel;
+            pixel.ARGB = pImage->PixelGet(x, y);
             *pBuf++ = pixel.R;
             *pBuf++ = pixel.G;
             *pBuf++ = pixel.B;
