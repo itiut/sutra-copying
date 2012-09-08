@@ -79,6 +79,24 @@ void PixelSet(DWORD *dst_addr, DWORD *src_addr, BYTE src_alpha) {
     *dst_addr = dst_pixel.ARGB;
 }
 
+void PixelSetAdd(DWORD *dst_addr, DWORD *src_addr, BYTE src_alpha) {
+    TARGB src_pixel, dst_pixel;
+    src_pixel.ARGB = *src_addr;
+    dst_pixel.ARGB = *dst_addr;
+
+    int r = dst_pixel.R + (int) src_pixel.R * src_alpha / 255;
+    dst_pixel.R = std::min(r, 255);
+
+    int g = dst_pixel.G + (int) src_pixel.G * src_alpha / 255;
+    dst_pixel.G = std::min(g, 255);
+
+    int b = dst_pixel.B + (int) src_pixel.B * src_alpha / 255;
+    dst_pixel.B = std::min(b, 255);
+
+    *dst_addr = dst_pixel.ARGB;
+}
+
+
 void FillNormal(DWORD *dst_addr, int width, DWORD color, BYTE alpha) {
     for (int i = 0; i < width; i++, dst_addr++) {
         PixelSet(dst_addr, &color, alpha);
@@ -88,6 +106,13 @@ void FillNormal(DWORD *dst_addr, int width, DWORD color, BYTE alpha) {
 void BltNormal(DWORD *dst_addr, DWORD *src_addr, int width, BYTE alpha) {
     for (int i = 0; i < width; i++, dst_addr++, src_addr++) {
         PixelSet(dst_addr, src_addr, alpha);
+    }
+}
+
+void BltNormalAlpha(DWORD *dst_addr, DWORD *src_addr, int width, BYTE alpha) {
+    for (int i = 0; i < width; i++, dst_addr++, src_addr++) {
+        int alpha2 = (int) *((BYTE *) src_addr + 3) * alpha / 255;
+        PixelSet(dst_addr, src_addr, alpha2);
     }
 }
 

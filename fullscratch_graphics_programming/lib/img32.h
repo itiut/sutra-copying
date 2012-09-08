@@ -2,6 +2,7 @@
 #define _IMG32_H_
 
 #include "bitmap.h"
+#include "blt.h"
 
 class CImage32
 {
@@ -40,6 +41,8 @@ public:
     const void *Buffer() const { return buffer_; }
 
     bool PixelFill(int x, int y, int w, int h, DWORD color, BYTE alpha);
+    bool Filter(int x, int y, int w, int h, TFilterType filter, DWORD value);
+    bool Filter(TFilterType filter, DWORD value);
 };
 
 #endif /* _IMG32_H_ */

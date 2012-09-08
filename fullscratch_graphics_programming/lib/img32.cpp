@@ -3,6 +3,7 @@
 #include "blt.h"
 
 CImage32::CImage32(void *dummy) {
+    (void) dummy;
 }
 
 CImage32::CImage32(int width, int height) {
@@ -93,4 +94,50 @@ bool CImage32::PixelFill(int x, int y, int w, int h, DWORD color, BYTE alpha) {
     }
 
     return true;
+}
+
+bool CImage32::Filter(int x, int y, int w, int h, TFilterType filter, DWORD value) {
+    TClipFillInfo info;
+    info.dx = x; info.dy = y;
+    info.dw = w; info.dh = h;
+
+    TClipSize dst;
+    dst.width = Width();
+    dst.height = Height();
+
+    if (ClipFillInfo(&dst, &info) == false) {
+        return false;
+    }
+
+    for (int i = info.dy, end = info.dy + info.dh; i < end; i++) {
+        DWORD *dst_addr = (DWORD *) PixelAddress(info.dx, i);
+        switch (filter) {
+        case FLT_AND:
+            for (int j = 0; j < info.dw; j++, dst_addr++) {
+                *dst_addr &= value;
+            }
+            break;
+        case FLT_OR:
+            for (int j = 0; j < info.dw; j++, dst_addr++) {
+                *dst_addr |= value;
+            }
+            break;
+        case FLT_XOR:
+            for (int j = 0; j < info.dw; j++, dst_addr++) {
+                *dst_addr ^= value;
+            }
+            break;
+        case FLT_NOT:
+            for (int j = 0; j < info.dw; j++, dst_addr++) {
+                *dst_addr = ~*dst_addr;
+            }
+            break;
+        }
+    }
+
+    return true;
+}
+
+bool CImage32::Filter(TFilterType filter, DWORD value) {
+    return Filter(0, 0, Width(), Height(), filter, value);
 }
