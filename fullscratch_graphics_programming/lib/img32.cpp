@@ -74,17 +74,16 @@ DWORD CImage32::PixelGetNC(int x, int y) const {
     return *ptr;
 }
 
-
 bool CImage32::PixelFill(int x, int y, int w, int h, DWORD color, BYTE alpha) {
     TClipFillInfo info;
     info.dx = x; info.dy = y;
     info.dw = w; info.dh = h;
 
-    TClipSize dst;
-    dst.width = Width();
-    dst.height = Height();
+    TClipSize dst_block;
+    dst_block.width = Width();
+    dst_block.height = Height();
 
-    if (ClipFillInfo(&dst, &info) == false) {
+    if (ClipFillInfo(&dst_block, &info) == false) {
         return false;
     }
 
@@ -101,11 +100,11 @@ bool CImage32::Filter(int x, int y, int w, int h, TFilterType filter, DWORD valu
     info.dx = x; info.dy = y;
     info.dw = w; info.dh = h;
 
-    TClipSize dst;
-    dst.width = Width();
-    dst.height = Height();
+    TClipSize dst_block;
+    dst_block.width = Width();
+    dst_block.height = Height();
 
-    if (ClipFillInfo(&dst, &info) == false) {
+    if (ClipFillInfo(&dst_block, &info) == false) {
         return false;
     }
 
@@ -140,4 +139,57 @@ bool CImage32::Filter(int x, int y, int w, int h, TFilterType filter, DWORD valu
 
 bool CImage32::Filter(TFilterType filter, DWORD value) {
     return Filter(0, 0, Width(), Height(), filter, value);
+}
+
+bool CImage32::Blt(const CBltInfo *bi, int dx, int dy, const CImage32 *src, int sx, int sy, int sw, int sh) {
+    TClipBltInfo info;
+    info.sx = sx; info.sy = sy;
+    info.sw = sw; info.sh = sh;
+    info.dx = dx; info.dy = dy;
+
+    TClipSize dst_block, src_block;
+    dst_block.width  = Width();
+    dst_block.height = Height();
+    src_block.width  = src->Width();
+    src_block.height = src->Height();
+
+    if (ClipBltInfo(&dst_block, &src_block, &info) == false) {
+        return false;
+    }
+
+    for (int i = info.dy, end = info.dy + info.sh; i < end; i++) {
+        DWORD *src_addr = (DWORD *) src->PixelAddress(info.sx, info.sy + i - info.dy);
+        DWORD *dst_addr = (DWORD *) PixelAddress(info.dx, i);
+
+        switch (bi->type) {
+        case BLT_COPY:
+            BltCopy(dst_addr, src_addr, info.sw);
+            break;
+        case BLT_NORMAL:
+            BltNormal(dst_addr, src_addr, info.sw, bi->alpha);
+            break;
+        case BLT_ALPHA:
+            BltNormalAlpha(dst_addr, src_addr, info.sw, bi->alpha);
+            break;
+        case BLT_KEY:
+            BltKey(dst_addr, src_addr, info.sw, bi->alpha, bi->colorkey);
+            break;
+        case BLT_ADD:
+            BltAdd(dst_addr, src_addr, info.sw, bi->alpha);
+            break;
+        case BLT_MUL:
+            BltMul(dst_addr, src_addr, info.sw, bi->alpha);
+            break;
+        }
+    }
+
+    return true;
+}
+
+bool CImage32::Blt(const CBltInfo *bi, int dx, int dy, const CImage32 *src) {
+    return Blt(bi, dx, dy, src, 0, 0, src->Width(), src->Height());
+}
+bool CImage32::Blt(int dx, int dy, const CImage32 *src) {
+    CBltInfo bi;
+    return Blt(&bi, dx, dy, src);
 }

@@ -43,6 +43,10 @@ public:
     bool PixelFill(int x, int y, int w, int h, DWORD color, BYTE alpha);
     bool Filter(int x, int y, int w, int h, TFilterType filter, DWORD value);
     bool Filter(TFilterType filter, DWORD value);
+
+    bool Blt(const CBltInfo *bi, int dx, int dy, const CImage32 *src, int sx, int sy, int sw, int sh);
+    bool Blt(const CBltInfo *bi, int dx, int dy, const CImage32 *src);
+    bool Blt(int dx, int dy, const CImage32 *src);
 };
 
 #endif /* _IMG32_H_ */

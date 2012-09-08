@@ -2,7 +2,7 @@
 #include "bitmap.h"
 #include "blt.h"
 
-bool ClipBltInfo(TClipSize *src, TClipSize *dst, TClipBltInfo *info) {
+bool ClipBltInfo(TClipSize *dst, TClipSize *src, TClipBltInfo *info) {
     if (info->sw + info->dx <= 0) return false;
     if (info->sh + info->dy <= 0) return false;
     if (info->dx >= dst->width)  return false;
@@ -67,22 +67,22 @@ bool ClipFillInfo(TClipSize *dst, TClipFillInfo *info) {
     return true;
 }
 
-void PixelSet(DWORD *dst_addr, DWORD *src_addr, BYTE src_alpha) {
-    TARGB src_pixel, dst_pixel;
-    src_pixel.ARGB = *src_addr;
+void PixelSet(DWORD *dst_addr, const DWORD *src_addr, BYTE src_alpha) {
+    TARGB dst_pixel, src_pixel;
     dst_pixel.ARGB = *dst_addr;
+    src_pixel.ARGB = *src_addr;
 
-    dst_pixel.R += (int) (src_pixel.R - dst_pixel.R) * src_alpha / 255;
-    dst_pixel.G += (int) (src_pixel.G - dst_pixel.G) * src_alpha / 255;
-    dst_pixel.B += (int) (src_pixel.B - dst_pixel.B) * src_alpha / 255;
+    dst_pixel.R = dst_pixel.R + (int) (src_pixel.R - dst_pixel.R) * src_alpha / 255;
+    dst_pixel.G = dst_pixel.G + (int) (src_pixel.G - dst_pixel.G) * src_alpha / 255;
+    dst_pixel.B = dst_pixel.B + (int) (src_pixel.B - dst_pixel.B) * src_alpha / 255;
 
     *dst_addr = dst_pixel.ARGB;
 }
 
-void PixelSetAdd(DWORD *dst_addr, DWORD *src_addr, BYTE src_alpha) {
-    TARGB src_pixel, dst_pixel;
-    src_pixel.ARGB = *src_addr;
+void PixelSetAdd(DWORD *dst_addr, const DWORD *src_addr, BYTE src_alpha) {
+    TARGB dst_pixel, src_pixel;
     dst_pixel.ARGB = *dst_addr;
+    src_pixel.ARGB = *src_addr;
 
     int r = dst_pixel.R + (int) src_pixel.R * src_alpha / 255;
     dst_pixel.R = std::min(r, 255);
@@ -96,6 +96,30 @@ void PixelSetAdd(DWORD *dst_addr, DWORD *src_addr, BYTE src_alpha) {
     *dst_addr = dst_pixel.ARGB;
 }
 
+void PixelSetMul(DWORD *dst_addr, const DWORD *src_addr, BYTE src_alpha) {
+    // srcが白なら描画不要
+    if ((*src_addr & 0x00ffffff) == 0x00ffffff) {
+        return;
+    }
+
+    TARGB dst_pixel, src_pixel;
+    dst_pixel.ARGB = *dst_addr;
+    src_pixel.ARGB = *src_addr;
+
+    // 乗算 = 白へのαブレンド + その結果の乗算
+    if (src_alpha == 255) {
+        dst_pixel.R = dst_pixel.R * src_pixel.R / 255;
+        dst_pixel.G = dst_pixel.G * src_pixel.G / 255;
+        dst_pixel.B = dst_pixel.B * src_pixel.B / 255;
+    } else {
+        dst_pixel.R = dst_pixel.R * (255 + (src_pixel.R - 255) * src_alpha / 255) / 255;
+        dst_pixel.G = dst_pixel.G * (255 + (src_pixel.G - 255) * src_alpha / 255) / 255;
+        dst_pixel.B = dst_pixel.B * (255 + (src_pixel.B - 255) * src_alpha / 255) / 255;
+    }
+
+    *dst_addr = dst_pixel.ARGB;
+}
+
 
 void FillNormal(DWORD *dst_addr, int width, DWORD color, BYTE alpha) {
     for (int i = 0; i < width; i++, dst_addr++) {
@@ -103,20 +127,27 @@ void FillNormal(DWORD *dst_addr, int width, DWORD color, BYTE alpha) {
     }
 }
 
-void BltNormal(DWORD *dst_addr, DWORD *src_addr, int width, BYTE alpha) {
+
+void BltCopy(DWORD *dst_addr, const DWORD *src_addr, int width) {
+    for (int i = 0; i < width; i++, dst_addr++, src_addr++) {
+        PixelSet(dst_addr, src_addr, 255);
+    }
+}
+
+void BltNormal(DWORD *dst_addr, const DWORD *src_addr, int width, BYTE alpha) {
     for (int i = 0; i < width; i++, dst_addr++, src_addr++) {
         PixelSet(dst_addr, src_addr, alpha);
     }
 }
 
-void BltNormalAlpha(DWORD *dst_addr, DWORD *src_addr, int width, BYTE alpha) {
+void BltNormalAlpha(DWORD *dst_addr, const DWORD *src_addr, int width, BYTE alpha) {
     for (int i = 0; i < width; i++, dst_addr++, src_addr++) {
         int alpha2 = (int) *((BYTE *) src_addr + 3) * alpha / 255;
         PixelSet(dst_addr, src_addr, alpha2);
     }
 }
 
-void BltKey(DWORD *dst_addr, DWORD *src_addr, int width, BYTE alpha, DWORD colorkey) {
+void BltKey(DWORD *dst_addr, const DWORD *src_addr, int width, BYTE alpha, DWORD colorkey) {
     for (int i = 0; i < width; i++, dst_addr++, src_addr++) {
         if (*src_addr != colorkey) {
             *dst_addr = *src_addr;
@@ -124,5 +155,14 @@ void BltKey(DWORD *dst_addr, DWORD *src_addr, int width, BYTE alpha, DWORD color
     }
 }
 
-void BltAdd(DWORD *dst_addr, DWORD *src_addr, int width, BYTE alpha) {
+void BltAdd(DWORD *dst_addr, const DWORD *src_addr, int width, BYTE alpha) {
+    for (int i = 0; i < width; i++, dst_addr++, src_addr++) {
+        PixelSetAdd(dst_addr, src_addr, alpha);
+    }
+}
+
+void BltMul(DWORD *dst_addr, const DWORD *src_addr, int width, BYTE alpha) {
+    for (int i = 0; i < width; i++, dst_addr++, src_addr++) {
+        PixelSetMul(dst_addr, src_addr, alpha);
+    }
 }
