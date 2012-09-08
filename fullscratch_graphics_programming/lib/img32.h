@@ -47,6 +47,8 @@ public:
     bool Blt(const CBltInfo *bi, int dx, int dy, const CImage32 *src, int sx, int sy, int sw, int sh);
     bool Blt(const CBltInfo *bi, int dx, int dy, const CImage32 *src);
     bool Blt(int dx, int dy, const CImage32 *src);
+
+    bool DrawXLine(int x0, int x1, int y, DWORD color, BYTE alpha);
 };
 
 #endif /* _IMG32_H_ */

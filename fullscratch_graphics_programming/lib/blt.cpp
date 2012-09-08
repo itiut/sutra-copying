@@ -148,6 +148,8 @@ void BltNormalAlpha(DWORD *dst_addr, const DWORD *src_addr, int width, BYTE alph
 }
 
 void BltKey(DWORD *dst_addr, const DWORD *src_addr, int width, BYTE alpha, DWORD colorkey) {
+    (void) alpha;
+
     for (int i = 0; i < width; i++, dst_addr++, src_addr++) {
         if (*src_addr != colorkey) {
             *dst_addr = *src_addr;

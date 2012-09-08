@@ -1,4 +1,5 @@
 #include <cstdlib>
+#include <algorithm>
 #include "img32.h"
 #include "blt.h"
 
@@ -80,8 +81,8 @@ bool CImage32::PixelFill(int x, int y, int w, int h, DWORD color, BYTE alpha) {
     info.dw = w; info.dh = h;
 
     TClipSize dst_block;
-    dst_block.width = Width();
-    dst_block.height = Height();
+    dst_block.width = width_;
+    dst_block.height = height_;
 
     if (ClipFillInfo(&dst_block, &info) == false) {
         return false;
@@ -101,8 +102,8 @@ bool CImage32::Filter(int x, int y, int w, int h, TFilterType filter, DWORD valu
     info.dw = w; info.dh = h;
 
     TClipSize dst_block;
-    dst_block.width = Width();
-    dst_block.height = Height();
+    dst_block.width = width_;
+    dst_block.height = height_;
 
     if (ClipFillInfo(&dst_block, &info) == false) {
         return false;
@@ -148,8 +149,8 @@ bool CImage32::Blt(const CBltInfo *bi, int dx, int dy, const CImage32 *src, int 
     info.dx = dx; info.dy = dy;
 
     TClipSize dst_block, src_block;
-    dst_block.width  = Width();
-    dst_block.height = Height();
+    dst_block.width  = width_;
+    dst_block.height = height_;
     src_block.width  = src->Width();
     src_block.height = src->Height();
 
@@ -192,4 +193,28 @@ bool CImage32::Blt(const CBltInfo *bi, int dx, int dy, const CImage32 *src) {
 bool CImage32::Blt(int dx, int dy, const CImage32 *src) {
     CBltInfo bi;
     return Blt(&bi, dx, dy, src);
+}
+
+
+bool CImage32::DrawXLine(int x0, int x1, int y, DWORD color, BYTE alpha) {
+    if (y < 0 || height_ <= y) {
+        return false;
+    }
+    if (x1 < x0) {
+        std::swap(x0, x1);
+    }
+    if (x1 < 0 || width_ <= x0) {
+        return false;
+    }
+
+    x0 = std::max(x0, 0);
+    x1 = std::min(x1, width_ - 1);
+
+    DWORD *addr = (DWORD *) PixelAddress(x0, y);
+
+    for (int x = x0; x <= x1; x++, addr++) {
+        ::PixelSet(addr, &color, alpha);
+    }
+
+    return true;
 }
