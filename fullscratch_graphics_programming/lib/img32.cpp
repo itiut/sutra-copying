@@ -1,5 +1,6 @@
 #include <cstdlib>
 #include "img32.h"
+#include "blt.h"
 
 CImage32::CImage32(void *dummy) {
 }
@@ -70,4 +71,26 @@ DWORD CImage32::PixelGet(int x, int y) const {
 DWORD CImage32::PixelGetNC(int x, int y) const {
     DWORD *ptr = (DWORD *) PixelAddressNC(x, y);
     return *ptr;
+}
+
+
+bool CImage32::PixelFill(int x, int y, int w, int h, DWORD color, BYTE alpha) {
+    TClipFillInfo info;
+    info.dx = x; info.dy = y;
+    info.dw = w; info.dh = h;
+
+    TClipSize dst;
+    dst.width = Width();
+    dst.height = Height();
+
+    if (ClipFillInfo(&dst, &info) == false) {
+        return false;
+    }
+
+    for (int i = info.dy, end = info.dy + info.dh; i < end; i++) {
+        DWORD *dst_addr = (DWORD *) PixelAddress(info.dx, i);
+        FillNormal(dst_addr, info.dw, color, alpha);
+    }
+
+    return true;
 }

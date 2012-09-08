@@ -38,6 +38,8 @@ public:
     int Height() const { return height_; }
     void *Buffer() { return buffer_; }
     const void *Buffer() const { return buffer_; }
+
+    bool PixelFill(int x, int y, int w, int h, DWORD color, BYTE alpha);
 };
 
 #endif /* _IMG32_H_ */
