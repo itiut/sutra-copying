@@ -218,3 +218,44 @@ bool CImage32::DrawXLine(int x0, int x1, int y, DWORD color, BYTE alpha) {
 
     return true;
 }
+
+bool CImage32::DrawLine(int x0, int y0, int x1, int y1, DWORD color) {
+    if (x0 < 0 && x1 < 0) return false;
+    if (y0 < 0 && y1 < 0) return false;
+    if (x0 > width_ && x1 > width_) return false;
+    if (y0 > height_ && y1 > height_) return false;
+
+    if (std::abs(x0 - x1) > std::abs(y0 - y1)) {
+        double fy = y0, dy = 0;
+        if (x0 != x1) {
+            dy = (double) (y1 - y0) / (x1 - x0);
+        }
+
+        int dx = 1;
+        if (x1 < x0) {
+            dx = -1;
+            dy = -dy;
+        }
+
+        for (int x = x0; x != x1; x += dx, fy += dy) {
+            PixelSet(x, (int) (fy + 0.5), color);
+        }
+    } else {
+        double fx = x0, dx = 0;
+        if (y0 != y1) {
+            dx = (double) (x1 - x0) / (y1 - y0);
+        }
+
+        int dy = 1;
+        if (y1 < y0) {
+            dy = -1;
+            dx = -dx;
+        }
+
+        for (int y = y0; y != y1; y += dy, fx += dx) {
+            PixelSet((int) (fx + 0.5), y, color);
+        }
+    }
+
+    return true;
+}
