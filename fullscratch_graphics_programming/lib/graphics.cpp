@@ -37,9 +37,14 @@ void CPolySide::Clear() {
 }
 
 bool CPolySide::Add(FPOINT *v1, FPOINT *v2) {
+    return Add(v1, v2, true);
+}
+
+bool CPolySide::Add(FPOINT *v1, FPOINT *v2, bool upper) {
     TPolySide s;
     s.v1 = v1;
     s.v2 = v2;
+    s.upper = upper;
     data_.push_back(s);
     return true;
 }
@@ -47,6 +52,10 @@ bool CPolySide::Add(FPOINT *v1, FPOINT *v2) {
 void CPolySide::Get(FPOINT **v1, FPOINT **v2, int index) {
     *v1 = data_[index].v1;
     *v2 = data_[index].v2;
+}
+
+bool CPolySide::Upper(int index) {
+    return data_[index].upper;
 }
 
 bool CPolySide::IntersectoinX(int index, double y, double *x) {
@@ -230,6 +239,104 @@ bool DrawPolygon(CImage32 *dst, CPolyVertex *buf, DWORD color, DWORD alpha) {
                 right = std::min(right, (double) dst->Width());
 
                 dst->DrawXLine(left, right, y, color, alpha);
+            }
+        }
+    }
+
+    return true;
+}
+
+bool DrawPolygonNonZero(CImage32 *dst, CPolyVertex *buf, DWORD color, DWORD alpha) {
+    if (buf->Num() < 3) {
+        return false;
+    }
+
+    int min_y, max_y;
+    for (int i = 0; i < buf->Num(); i++) {
+        FPOINT *p;
+        buf->Get(&p, i);
+        if (i == 0) {
+            min_y = max_y = p->y;
+            continue;
+        }
+        min_y = std::min(min_y, (int) p->y);
+        max_y = std::max(max_y, (int) p->y);
+    }
+
+    if (max_y < 0 || dst->Height() <= min_y) {
+        return false;
+    }
+
+    min_y = std::max(min_y, 0);
+    max_y = std::min(max_y, dst->Height() - 1);
+
+    CPolySide ps;
+    for (int i = 0; i < buf->Num(); i++) {
+        FPOINT *v1, *v2;
+        buf->Get(&v1, i);
+        buf->Get(&v2, (i+1) % buf->Num());
+
+        bool upper = v2->y > v1->y;
+        ps.Add(v1, v2, upper);
+    }
+
+    for (int y = min_y; y <= max_y; y++) {
+        const int kMaxEdgesNum = 256;
+        double edges[kMaxEdgesNum];
+        bool upper[kMaxEdgesNum];
+        int edges_num = 0;
+
+        for (int i = 0; i < ps.Num(); i++) {
+            const double kVertexDiff = 0.125;
+            double x;
+            if (ps.IntersectoinX(i, y + kVertexDiff, &x)) {
+                edges[edges_num] = x;
+                upper[edges_num] = ps.Upper(i);
+                edges_num++;
+                if (edges_num >= kMaxEdgesNum) {
+                    return false;
+                }
+            }
+        }
+
+        if (edges_num % 2 != 0 || edges_num == 0) {
+            continue;
+        }
+
+        for (int i = 1; i < edges_num; i++) {
+            double temp_x = edges[i];
+            bool temp_upper = upper[i];
+            if (edges[i - 1] > temp_x) {
+                int j = i;
+                do {
+                    edges[j] = edges[j - 1];
+                    upper[j] = upper[j - 1];
+                    j--;
+                } while (j > 0 && edges[j - 1] > temp_x);
+                edges[j] = temp_x;
+                upper[j] = temp_upper;
+            }
+        }
+
+        for (int i = 0; i < edges_num - 1; i++) {
+            double left = edges[i];
+            double right = edges[i + 1];
+
+            if (left != right) {
+                int counter = 0;
+                for (int j = 0; j <= i; j++) {
+                    if (upper[j]) {
+                        counter++;
+                    } else {
+                        counter--;
+                    }
+                }
+
+                if (counter != 0) {
+                    left = std::max(left, 0.0);
+                    right = std::min(right, (double) dst->Width());
+                    dst->DrawXLine(left, right, y, color, alpha);
+                }
             }
         }
     }

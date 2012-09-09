@@ -22,6 +22,7 @@ struct FPOINT {
 struct TPolySide {
     FPOINT *v1;
     FPOINT *v2;
+    bool upper;
 };
 
 struct TTrianglePos {
@@ -53,7 +54,9 @@ public:
 
     void Clear();
     bool Add(FPOINT *v1, FPOINT *v2);
+    bool Add(FPOINT *v1, FPOINT *v2, bool upper);
     void Get(FPOINT **v1, FPOINT **v2, int index);
+    bool Upper(int index);
 
     bool IntersectoinX(int index, double y, double *x);
 
@@ -68,5 +71,6 @@ bool InTriangle(double x, double y, CVector2* p0, CVector2 *p1, CVector2 *p2);
 bool DrawTriangle(CImage32 *dst, TTrianglePos *tri, DWORD color, DWORD alpha);
 
 bool DrawPolygon(CImage32 *dst, CPolyVertex *buf, DWORD color, DWORD alpha);
+bool DrawPolygonNonZero(CImage32 *dst, CPolyVertex *buf, DWORD color, DWORD alpha);
 
 #endif /* _GRAPHICS_H_ */
