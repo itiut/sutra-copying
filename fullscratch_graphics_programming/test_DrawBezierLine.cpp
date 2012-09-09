@@ -1,8 +1,8 @@
-/* -*- compile-command: "g++ -Wall -Wextra -O2 test_DrawBezierLine.cpp lib/img32.cpp lib/imgdib.cpp lib/blt.cpp lib/shapes.cpp -lm" -*- */
+/* -*- compile-command: "g++ -Wall -Wextra -O2 test_DrawBezierLine.cpp lib/img32.cpp lib/imgdib.cpp lib/blt.cpp lib/graphics.cpp -lm" -*- */
 #include <iostream>
 #include <cstdio>
 #include "lib/imgdib.h"
-#include "lib/shapes.h"
+#include "lib/graphics.h"
 using namespace std;
 
 void Test_DrawSimpleBezierLine() {

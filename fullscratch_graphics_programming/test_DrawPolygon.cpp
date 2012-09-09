@@ -1,4 +1,4 @@
-/* -*- compile-command: "g++ -Wall -Wextra -O2 test_DrawPolygon.cpp lib/imgdib.cpp lib/img32.cpp lib/blt.cpp lib/graphics.cpp" -*- */
+/* -*- compile-command: "g++ -Wall -Wextra -O2 test_DrawPolygon.cpp lib/imgdib.cpp lib/img32.cpp lib/blt.cpp lib/graphics.cpp -lm" -*- */
 #include <iostream>
 #include <cstdio>
 #include "lib/imgdib.h"
