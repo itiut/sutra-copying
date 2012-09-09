@@ -1,4 +1,6 @@
+#include <iostream>
 #include <cmath>
+#include <vector>
 #include <algorithm>
 #include "graphics.h"
 
@@ -57,7 +59,7 @@ void CPolySide::Get(FPOINT **v1, FPOINT **v2, int index) {
     *v2 = data_[index].v2;
 }
 
-bool CPolySide::Upper(int index) {
+bool CPolySide::Upper(int index) const {
     return data_[index].upper;
 }
 
@@ -120,6 +122,90 @@ void CBezier::GetRange(double *min_val, double *max_val) const {
 
 
 // class CPath
+CPath::CPath(double cx, double cy) {
+    cx_ = cx;
+    cy_ = cy;
+}
+
+CPath::~CPath() {
+    Clear();
+}
+
+void CPath::Clear() {
+    bx_.clear();
+    by_.clear();
+}
+
+void CPath::AddSide(CBezier **bx, CBezier **by) {
+    bx_.push_back(CBezier());
+    by_.push_back(CBezier());
+    *bx = &bx_.back();
+    *by = &by_.back();
+}
+
+void CPath::AddM(double cx, double cy) {
+    cx_ = cx;
+    cy_ = cy;
+}
+
+void CPath::AddC(double x1, double y1, double x2, double y2, double x3, double y3) {
+    CBezier *bx, *by;
+    AddSide(&bx, &by);
+
+    bx->SetParams(cx_, x1, x2, x3);
+    by->SetParams(cy_, y1, y2, y3);
+    cx_ = x3;
+    cy_ = y3;
+}
+
+void CPath::AddV(double x2, double y2, double x3, double y3) {
+    CBezier *bx, *by;
+    AddSide(&bx, &by);
+
+    bx->SetParams(cx_, cx_, x2, x3);
+    by->SetParams(cy_, cy_, y2, y3);
+    cx_ = x3;
+    cy_ = y3;
+}
+
+void CPath::AddY(double x1, double y1, double x3, double y3) {
+    CBezier *bx, *by;
+    AddSide(&bx, &by);
+
+    bx->SetParams(cx_, x1, x3, x3);
+    by->SetParams(cy_, y1, y3, y3);
+    cx_ = x3;
+    cy_ = y3;
+}
+
+void CPath::AddL(double x3, double y3) {
+    CBezier *bx, *by;
+    AddSide(&bx, &by);
+
+    bx->SetParams(cx_, cx_, x3, x3);
+    by->SetParams(cy_, cy_, y3, y3);
+    cx_ = x3;
+    cy_ = y3;
+}
+
+void CPath::CreateVertex(CPolyVertex *vertex, double r) {
+    for (int i = 0; i < (int) bx_.size(); i++) {
+        CBezier *bx = &bx_[i];
+        CBezier *by = &by_[i];
+
+        double length = BezierLength(bx, by, 8);
+        if (length == 0) {
+            continue;
+        }
+
+        double dt = r / length;
+        for (double t = 0; t < 1.0; t += dt) {
+            double x = bx->GetPos(t);
+            double y = by->GetPos(t);
+            vertex->Add(x, y);
+        }
+    }
+}
 
 
 

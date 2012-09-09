@@ -42,7 +42,7 @@ public:
     bool Add(double x, double y);
     void Get(FPOINT **v, int index);
 
-    int Num() { return data_.size(); };
+    int Num() const { return data_.size(); };
 };
 
 
@@ -58,11 +58,11 @@ public:
     bool Add(FPOINT *v1, FPOINT *v2);
     bool Add(FPOINT *v1, FPOINT *v2, bool upper);
     void Get(FPOINT **v1, FPOINT **v2, int index);
-    bool Upper(int index);
+    bool Upper(int index) const;
 
     bool IntersectoinX(int index, double y, double *x);
 
-    int Num() { return data_.size(); }
+    int Num() const { return data_.size(); }
 };
 
 
@@ -100,7 +100,7 @@ public:
     void AddY(double x1, double y1, double x3, double y3);
     void AddL(double x3, double y3);
 
-    void CreateVertes(CPolyVertex *vertex, double r);
+    void CreateVertex(CPolyVertex *vertex, double r);
 };
 
 
