@@ -78,8 +78,8 @@ bool CPolySide::IntersectoinX(int index, double y, double *x) {
 
 
 bool DrawCircle(CImage32 *dst, double mx, double my, double r, DWORD color) {
-    for (int y = my - r, y_last = my + r; y <= y_last; y++) {
-        for (int x = mx - r, x_last = mx + r; x <= x_last; x++) {
+    for (int y = my - r; y <= my + r; y++) {
+        for (int x = mx - r; x <= mx + r; x++) {
             if ((x - mx) * (x - mx) + (y - my) * (y - my) <= r * r) {
                 dst->PixelSet(x, y, color);
             }
@@ -162,6 +162,76 @@ bool DrawTriangle(CImage32 *dst, TTrianglePos *tri, DWORD color, DWORD alpha) {
         last = std::min(last, dst->Width() - 1);
 
         dst->DrawXLine(first, last, y, color, alpha);
+    }
+
+    return true;
+}
+
+bool DrawPolygon(CImage32 *dst, CPolyVertex *buf, DWORD color, DWORD alpha) {
+    if (buf->Num() < 3) {
+        return false;
+    }
+
+    int min_y, max_y;
+    for (int i = 0; i < buf->Num(); i++) {
+        FPOINT *p;
+        buf->Get(&p, i);
+        if (i == 0) {
+            min_y = max_y = p->y;
+            continue;
+        }
+        min_y = std::min(min_y, (int) p->y);
+        max_y = std::max(max_y, (int) p->y);
+    }
+
+    if (max_y < 0 || dst->Height() <= min_y) {
+        return false;
+    }
+
+    min_y = std::max(min_y, 0);
+    max_y = std::min(max_y, dst->Height() - 1);
+
+    CPolySide ps;
+    for (int i = 0; i < buf->Num(); i++) {
+        FPOINT *v1, *v2;
+        buf->Get(&v1, i);
+        buf->Get(&v2, (i+1) % buf->Num());
+        ps.Add(v1, v2);
+    }
+
+    for (int y = min_y; y <= max_y; y++) {
+        const int kMaxEdgesNum = 256;
+        double edges[kMaxEdgesNum];
+        int edges_num = 0;
+
+        for (int i = 0; i < ps.Num(); i++) {
+            const double kVertexDiff = 0.125;
+            double x;
+            if (ps.IntersectoinX(i, y + kVertexDiff, &x)) {
+                edges[edges_num++] = x;
+                if (edges_num >= kMaxEdgesNum) {
+                    return false;
+                }
+            }
+        }
+
+        if (edges_num % 2 != 0 || edges_num == 0) {
+            continue;
+        }
+
+        std::sort(edges, edges + edges_num);
+
+        for (int i = 0; i < edges_num - 1; i += 2) {
+            double left = edges[i];
+            double right = edges[i + 1];
+
+            if (left != right) {
+                left = std::max(left, 0.0);
+                right = std::min(right, (double) dst->Width());
+
+                dst->DrawXLine(left, right, y, color, alpha);
+            }
+        }
     }
 
     return true;

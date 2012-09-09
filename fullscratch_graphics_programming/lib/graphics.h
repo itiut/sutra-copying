@@ -67,4 +67,6 @@ bool InTriangle(double x, double y, CVector2* p0, CVector2 *p1, CVector2 *p2);
 
 bool DrawTriangle(CImage32 *dst, TTrianglePos *tri, DWORD color, DWORD alpha);
 
+bool DrawPolygon(CImage32 *dst, CPolyVertex *buf, DWORD color, DWORD alpha);
+
 #endif /* _GRAPHICS_H_ */
