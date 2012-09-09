@@ -96,6 +96,10 @@ bool CImage32::PixelFill(int x, int y, int w, int h, DWORD color, BYTE alpha) {
     return true;
 }
 
+bool CImage32::PixelFill(DWORD color, BYTE alpha) {
+    return PixelFill(0, 0, width_, height_, color, alpha);
+}
+
 bool CImage32::Filter(int x, int y, int w, int h, TFilterType filter, DWORD value) {
     TClipFillInfo info;
     info.dx = x; info.dy = y;
