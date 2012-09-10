@@ -250,7 +250,7 @@ bool CImage32::DrawLine(int x0, int y0, int x1, int y1, DWORD color) {
         }
 
         for (int x = x0; x != x1; x += dx, fy += dy) {
-            PixelSet(x, (int) (fy + 0.5), color);
+            PixelSet(x, fy, color);
         }
     } else {
         double fx = x0, dx = 0;
@@ -265,7 +265,7 @@ bool CImage32::DrawLine(int x0, int y0, int x1, int y1, DWORD color) {
         }
 
         for (int y = y0; y != y1; y += dy, fx += dx) {
-            PixelSet((int) (fx + 0.5), y, color);
+            PixelSet(fx, y, color);
         }
     }
 

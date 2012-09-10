@@ -381,8 +381,8 @@ bool DrawTriangle(CImage32 *dst, TTrianglePos *tri, DWORD color, BYTE alpha) {
             continue;
         }
 
-        int first = edges[0] + 0.5;
-        int last = edges[1] + 0.5;
+        int first = edges[0];
+        int last = edges[1];
         if (first == last) {
             continue;
         }
