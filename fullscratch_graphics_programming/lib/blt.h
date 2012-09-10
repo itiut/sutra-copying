@@ -66,4 +66,6 @@ void BltKey(DWORD *dst_addr, const DWORD *src_addr, int width, BYTE alpha, DWORD
 void BltAdd(DWORD *dst_addr, const DWORD *src_addr, int width, BYTE alpha);
 void BltMul(DWORD *dst_addr, const DWORD *src_addr, int width, BYTE alpha);
 
+void AddARGB(int *r, int *g, int *b, TARGB *color, int m);
+
 #endif /* _BLT_H_ */

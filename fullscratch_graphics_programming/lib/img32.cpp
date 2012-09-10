@@ -66,6 +66,23 @@ void CImage32::PixelSet(int x, int y, DWORD color, BYTE alpha) {
     ::PixelSet(ptr, &color, alpha);
 }
 
+void CImage32::PixelSetAA(double fx, double fy, DWORD color) {
+    int alpha_x = 255.0 * (fx - (int) fx);
+    int alpha_y = 255.0 * (fy - (int) fy);
+
+    int alpha[] = {
+        (255 - alpha_x) * (255 - alpha_y) / 255,
+        alpha_x * (255 - alpha_y) / 255,
+        (255 - alpha_x) * alpha_y / 255,
+        alpha_x * alpha_y / 255,
+    };
+
+    PixelSet(fx, fy, color, alpha[0]);
+    PixelSet(fx + 1, fy, color, alpha[1]);
+    PixelSet(fx, fy + 1, color, alpha[2]);
+    PixelSet(fx + 1, fy + 1, color, alpha[3]);
+}
+
 void CImage32::PixelSetNC(int x, int y, DWORD color) {
     DWORD *ptr = (DWORD *) PixelAddressNC(x, y);
     *ptr = color;
@@ -203,11 +220,79 @@ bool CImage32::Blt(const CBltInfo *bi, int dx, int dy, const CImage32 *src, int 
 bool CImage32::Blt(const CBltInfo *bi, int dx, int dy, const CImage32 *src) {
     return Blt(bi, dx, dy, src, 0, 0, src->Width(), src->Height());
 }
+
 bool CImage32::Blt(int dx, int dy, const CImage32 *src) {
     CBltInfo bi;
     return Blt(&bi, dx, dy, src);
 }
 
+bool CImage32::BltAA(double fx, double fy, const CImage32 *src) {
+    int alpha_x = 255.0 * (fx - (int) fx);
+    int alpha_y = 255.0 * (fy - (int) fy);
+
+    int alpha[] = {
+        alpha_x * alpha_y / 255,
+        (255 - alpha_x) * alpha_y / 255,
+        alpha_x * (255 - alpha_y) / 255,
+        (255 - alpha_x) * (255 - alpha_y) / 255,
+    };
+
+    int sw = src->Height();
+    int sh = src->Width();
+
+    for (int y = fy, y_last = y + sh, sy = 0; y <= y_last; y++, sy++) {
+        for (int x = fx, x_last = x + sw, sx = 0; x < x_last; x++, sx++) {
+            TARGB c[4];
+            c[0].ARGB = src->PixelGet(sx - 1, sy - 1);
+            c[1].ARGB = src->PixelGet(sx, sy - 1);
+            c[2].ARGB = src->PixelGet(sx - 1, sy);
+            c[3].ARGB = src->PixelGet(sx, sy);
+
+            bool p[4];
+            std::fill_n(p, 4, true);
+            if (sx == 0) {
+                p[0] = p[2] = false;
+            } else if (sx == sw) {
+                p[1] = p[3] = false;
+            }
+            if (sy == 0 ) {
+                p[0] = p[1] = false;
+            } else if (sy == sh) {
+                p[2] = p[3] = false;
+            }
+
+            int a, r, g, b;
+            a = r = g = b = 0;
+
+            if (p[0]) {
+                AddARGB(&r, &g, &b, &c[0], alpha[0]);
+                a += alpha[0];
+            }
+            if (p[1]) {
+                AddARGB(&r, &g, &b, &c[1], alpha[1]);
+                a += alpha[1];
+            }
+            if (p[2]) {
+                AddARGB(&r, &g, &b, &c[2], alpha[2]);
+                a += alpha[2];
+            }
+            if (p[3]) {
+                AddARGB(&r, &g, &b, &c[3], alpha[3]);
+                a += alpha[3];
+            }
+
+            if (a != 0) {
+                TARGB color;
+                color.R = r / a;
+                color.G = g / a;
+                color.B = b / a;
+                PixelSet(x, y, color.ARGB, a);
+            }
+        }
+    }
+
+    return true;
+}
 
 bool CImage32::DrawXLine(int x0, int x1, int y, DWORD color, BYTE alpha) {
     if (y < 0 || height_ <= y) {
@@ -273,7 +358,6 @@ bool CImage32::DrawXLineAA(double x0, double x1, int y, DWORD color, BYTE alpha)
 
     return true;
 }
-
 
 bool CImage32::DrawLine(int x0, int y0, int x1, int y1, DWORD color) {
     if (x0 < 0 && x1 < 0) return false;

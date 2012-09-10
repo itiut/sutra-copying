@@ -31,6 +31,7 @@ public:
 
     void PixelSet(int x, int y, DWORD color);
     void PixelSet(int x, int y, DWORD color, BYTE alpha);
+    void PixelSetAA(double fx, double fy, DWORD color);
     void PixelSetNC(int x, int y, DWORD color);
 
     DWORD PixelGet(int x, int y) const;
@@ -49,6 +50,7 @@ public:
     bool Blt(const CBltInfo *bi, int dx, int dy, const CImage32 *src, int sx, int sy, int sw, int sh);
     bool Blt(const CBltInfo *bi, int dx, int dy, const CImage32 *src);
     bool Blt(int dx, int dy, const CImage32 *src);
+    bool BltAA(double fx, double fy, const CImage32 *src);
 
     bool DrawXLine(int x0, int x1, int y, DWORD color, BYTE alpha);
     bool DrawXLineAA(double x0, double x1, int y, DWORD color, BYTE alpha);

@@ -168,3 +168,9 @@ void BltMul(DWORD *dst_addr, const DWORD *src_addr, int width, BYTE alpha) {
         PixelSetMul(dst_addr, src_addr, alpha);
     }
 }
+
+void AddARGB(int *r, int *g, int *b, TARGB *color, int alpha) {
+    *r += color->R * alpha;
+    *g += color->G * alpha;
+    *b += color->B * alpha;
+}
