@@ -106,7 +106,9 @@ public:
 
 bool DrawCircle(CImage32 *dst, double mx, double my, double r, DWORD color);
 bool DrawCircleAASlow(CImage32 *dst, double mx, double my, double r, int div, DWORD color, BYTE alpha);
+bool DrawCircleAA(CImage32 *dst, double mx, double my, double r, int div, DWORD color, BYTE alpha);
 
+bool InOriginCircle(double x, double y, double r);
 bool InTriangle(double x, double y, CVector2* p0, CVector2 *p1, CVector2 *p2);
 
 bool DrawTriangle(CImage32 *dst, TTrianglePos *tri, DWORD color, BYTE alpha);

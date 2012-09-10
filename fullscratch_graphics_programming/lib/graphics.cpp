@@ -212,25 +212,32 @@ void CPath::CreateVertex(CPolyVertex *vertex, double r) {
 // function
 
 bool DrawCircle(CImage32 *dst, double mx, double my, double r, DWORD color) {
-    for (int y = my - r; y <= my + r; y++) {
-        for (int x = mx - r; x <= mx + r; x++) {
-            if ((x - mx) * (x - mx) + (y - my) * (y - my) <= r * r) {
+    int min_x = mx - r, max_x = mx + r;
+    int min_y = my - r, max_y = my + r;
+
+    for (int y = min_y; y <= max_y; y++) {
+        for (int x = min_x; x <= max_x; x++) {
+            if (InOriginCircle(x - mx, y - my, r)) {
                 dst->PixelSet(x, y, color);
             }
         }
     }
+
     return true;
 }
 
 bool DrawCircleAASlow(CImage32 *dst, double mx, double my, double r, int div, DWORD color, BYTE alpha) {
-    for (int y = my - r; y <= my + r; y++) {
-        for (int x = mx - r; x <= mx + r; x++) {
+    int min_x = mx - r, max_x = mx + r;
+    int min_y = my - r, max_y = my + r;
+
+    for (int y = min_y; y <= max_y; y++) {
+        for (int x = min_x; x <= max_x; x++) {
             int c = 0;
             for (int i = 0; i < div; i++) {
                 for (int j = 0; j < div; j++) {
                     double dx = (double) j / div;
                     double dy = (double) i / div;
-                    if ((x + dx - mx) * (x + dx - mx) + (y + dy - my) * (y + dy - my) <= r * r) {
+                    if (InOriginCircle(x + dx - mx, y + dy - my, r)) {
                         c++;
                     }
                 }
@@ -244,6 +251,72 @@ bool DrawCircleAASlow(CImage32 *dst, double mx, double my, double r, int div, DW
     }
 
     return true;
+}
+
+bool DrawCircleAA(CImage32 *dst, double mx, double my, double r, int div, DWORD color, BYTE alpha) {
+    if (r <= 0) return false;
+    if (mx + r < 0 || dst->Width() < mx - r) return false;
+    if (my + r < 0 || dst->Height() < my - r) return false;
+
+    bool small = (r <= 3) ? true : false;
+
+    int min_x = mx - r, max_x = mx + r;
+    int min_y = my - r, max_y = my + r;
+
+    int dr = r * div;
+    int dmx = mx * div;
+    int dmy = my * div;
+
+    for (int y = min_y; y <= max_y; y++) {
+        for (int x = min_x; x <= max_x; x++) {
+            double fx = x - mx;
+            double fy = y - my;
+
+            bool insides[4];
+            std::fill_n(insides, 4, false);
+
+            if (small == false) {
+                insides[0] = InOriginCircle(fx    , fy    , r);
+                insides[1] = InOriginCircle(fx + 1, fy    , r);
+                insides[2] = InOriginCircle(fx    , fy + 1, r);
+                insides[3] = InOriginCircle(fx + 1, fy + 1, r);
+            } else {
+                insides[0] = true;
+            }
+
+            bool outside = !insides[0] && !insides[1] && !insides[2] && !insides[3];
+            if (outside) {
+                continue;
+            }
+
+            bool notaa = insides[0] && insides[1] && insides[2] && insides[3];
+            if (notaa) {
+                dst->PixelSet(x, y, color, alpha);
+                continue;
+            }
+
+            int c = 0;
+            for (int i = 0; i < div; i++) {
+                for (int j = 0; j < div; j++) {
+                    if (InOriginCircle(x * div + j - dmx, y * div + i - dmy, dr)) {
+                        c++;
+                    }
+                }
+            }
+
+            if (c > 0) {
+                int d = 255 * c / (div * div);
+                dst->PixelSet(x, y, color, d * alpha / 255);
+            }
+        }
+    }
+
+    return true;
+}
+
+
+inline bool InOriginCircle(double x, double y, double r) {
+    return x * x + y * y <= r * r;
 }
 
 bool InTriangle(double x, double y, CVector2* p0, CVector2 *p1, CVector2 *p2) {

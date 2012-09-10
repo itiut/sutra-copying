@@ -6,7 +6,7 @@
 #include "lib/graphics.h"
 using namespace std;
 
-void Test_DrawCircleAASlow () {
+void Test_DrawCircleAASlow() {
     CImageDIB dib(300, 300);
     dib.PixelFill(0, 0, 300, 300, 0xffffffff, 255);
 
@@ -14,6 +14,15 @@ void Test_DrawCircleAASlow () {
     dib.WriteBitmap("output_DrawCircleAASlow.bmp");
 }
 
+void Test_DrawCircleAA() {
+    CImageDIB dib(300, 300);
+    dib.PixelFill(0, 0, 300, 300, 0xffffffff, 255);
+
+    DrawCircleAA(&dib, 150, 150, 100, 5, 0xff000000, 255);
+    dib.WriteBitmap("output_DrawCircleAA.bmp");
+}
+
 int main () {
     Test_DrawCircleAASlow();
+    Test_DrawCircleAA();
 }
