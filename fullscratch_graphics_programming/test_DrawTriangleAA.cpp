@@ -5,7 +5,7 @@
 #include "lib/graphics.h"
 using namespace std;
 
-void Test_DrawTriangleSlowAA () {
+void Test_DrawTriangleAASlow () {
     CImageDIB dib(300, 300);
     dib.PixelFill(0, 0, 300, 300, 0xffffffff, 255);
 
@@ -32,9 +32,9 @@ void Test_DrawTriangleSlowAA () {
         }
     }
 
-    dib.WriteBitmap("output_DrawTriangleSlowAA.bmp");
+    dib.WriteBitmap("output_DrawTriangleAASlow.bmp");
 }
 
 int main () {
-    Test_DrawTriangleSlowAA();
+    Test_DrawTriangleAASlow();
 }
