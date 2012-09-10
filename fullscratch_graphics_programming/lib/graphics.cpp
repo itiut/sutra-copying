@@ -1,4 +1,3 @@
-#include <iostream>
 #include <cmath>
 #include <vector>
 #include <algorithm>
@@ -67,7 +66,7 @@ bool CPolySide::IntersectoinX(int index, double y, double *x) {
     FPOINT *v1, *v2;
     Get(&v1, &v2, index);
 
-    if (v1->y == v2->y) return true;
+    if (v1->y == v2->y) return false;
 
     if ((v1->y <= y && y <= v2->y) || (v2->y <= y && y <= v1->y)) {
         if (y == v1->y) {

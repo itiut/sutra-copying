@@ -1,6 +1,7 @@
 #ifndef _GRAPHICS_H_
 #define _GRAPHICS_H_
 
+#include <cmath>
 #include <vector>
 #include "bitmap.h"
 #include "img32.h"
@@ -11,7 +12,19 @@ public:
 
     CVector2(const CVector2& src) { x = src.x; y = src.y; }
     CVector2() { x = 0; y = 0; }
-    CVector2(double setx, double sety) { x = setx; y = sety; }
+    CVector2(double setx, double sety) { Set(setx, sety); }
+
+    void Set(double setx, double sety) { x = setx, y = sety; }
+
+    void Mul(double c) { x *= c; y *= c; }
+    void Rotate(double rad) {
+        double cosr = cos(rad);
+        double sinr = sin(rad);
+        double tmpx = x * cosr - y * sinr;
+        double tmpy = x * sinr + y * cosr;
+        x = tmpx;
+        y = tmpy;
+    }
 };
 
 
