@@ -222,6 +222,30 @@ bool DrawCircle(CImage32 *dst, double mx, double my, double r, DWORD color) {
     return true;
 }
 
+bool DrawCircleAASlow(CImage32 *dst, double mx, double my, double r, int div, DWORD color, BYTE alpha) {
+    for (int y = my - r; y <= my + r; y++) {
+        for (int x = mx - r; x <= mx + r; x++) {
+            int c = 0;
+            for (int i = 0; i < div; i++) {
+                for (int j = 0; j < div; j++) {
+                    double dx = (double) j / div;
+                    double dy = (double) i / div;
+                    if ((x + dx - mx) * (x + dx - mx) + (y + dy - my) * (y + dy - my) <= r * r) {
+                        c++;
+                    }
+                }
+            }
+
+            if (c > 0) {
+                int d = 255 * c / (div * div);
+                dst->PixelSet(x, y, color, d * alpha / 255);
+            }
+        }
+    }
+
+    return true;
+}
+
 bool InTriangle(double x, double y, CVector2* p0, CVector2 *p1, CVector2 *p2) {
     double vx0, vy0, vx1, vy1, z;
 
@@ -250,7 +274,7 @@ bool InTriangle(double x, double y, CVector2* p0, CVector2 *p1, CVector2 *p2) {
     return true;
 }
 
-bool DrawTriangle(CImage32 *dst, TTrianglePos *tri, DWORD color, DWORD alpha) {
+bool DrawTriangle(CImage32 *dst, TTrianglePos *tri, DWORD color, BYTE alpha) {
     int min_y = std::min(tri->p[0].y, std::min(tri->p[1].y, tri->p[2].y));
     int max_y = std::max(tri->p[0].y, std::max(tri->p[1].y, tri->p[2].y));
 
@@ -301,7 +325,7 @@ bool DrawTriangle(CImage32 *dst, TTrianglePos *tri, DWORD color, DWORD alpha) {
     return true;
 }
 
-bool DrawPolygon(CImage32 *dst, CPolyVertex *buf, DWORD color, DWORD alpha) {
+bool DrawPolygon(CImage32 *dst, CPolyVertex *buf, DWORD color, BYTE alpha) {
     if (buf->Num() < 3) {
         return false;
     }
@@ -371,7 +395,7 @@ bool DrawPolygon(CImage32 *dst, CPolyVertex *buf, DWORD color, DWORD alpha) {
     return true;
 }
 
-bool DrawPolygonNonZero(CImage32 *dst, CPolyVertex *buf, DWORD color, DWORD alpha) {
+bool DrawPolygonNonZero(CImage32 *dst, CPolyVertex *buf, DWORD color, BYTE alpha) {
     if (buf->Num() < 3) {
         return false;
     }

@@ -30,7 +30,7 @@ public:
     }
 
     void PixelSet(int x, int y, DWORD color);
-    void PixelSet(int x, int y, DWORD color, DWORD alpha);
+    void PixelSet(int x, int y, DWORD color, BYTE alpha);
     void PixelSetNC(int x, int y, DWORD color);
 
     DWORD PixelGet(int x, int y) const;

@@ -105,13 +105,14 @@ public:
 
 
 bool DrawCircle(CImage32 *dst, double mx, double my, double r, DWORD color);
+bool DrawCircleAASlow(CImage32 *dst, double mx, double my, double r, int div, DWORD color, BYTE alpha);
 
 bool InTriangle(double x, double y, CVector2* p0, CVector2 *p1, CVector2 *p2);
 
-bool DrawTriangle(CImage32 *dst, TTrianglePos *tri, DWORD color, DWORD alpha);
+bool DrawTriangle(CImage32 *dst, TTrianglePos *tri, DWORD color, BYTE alpha);
 
-bool DrawPolygon(CImage32 *dst, CPolyVertex *buf, DWORD color, DWORD alpha);
-bool DrawPolygonNonZero(CImage32 *dst, CPolyVertex *buf, DWORD color, DWORD alpha);
+bool DrawPolygon(CImage32 *dst, CPolyVertex *buf, DWORD color, BYTE alpha);
+bool DrawPolygonNonZero(CImage32 *dst, CPolyVertex *buf, DWORD color, BYTE alpha);
 
 double BezierLength(const CBezier *bx, const CBezier *by, int div);
 void DrawBezierLine(CImage32 *dst, DWORD color, const CBezier *bx, const CBezier *by);

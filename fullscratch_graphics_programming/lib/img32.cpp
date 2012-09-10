@@ -57,7 +57,7 @@ void CImage32::PixelSet(int x, int y, DWORD color) {
     *ptr = color;
 }
 
-void CImage32::PixelSet(int x, int y, DWORD color, DWORD alpha) {
+void CImage32::PixelSet(int x, int y, DWORD color, BYTE alpha) {
     DWORD *ptr = (DWORD *) PixelAddress(x, y);
     if (ptr == NULL) {
         return;
