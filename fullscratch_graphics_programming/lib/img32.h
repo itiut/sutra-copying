@@ -31,11 +31,12 @@ public:
 
     void PixelSet(int x, int y, DWORD color);
     void PixelSet(int x, int y, DWORD color, BYTE alpha);
-    void PixelSetAA(double fx, double fy, DWORD color);
     void PixelSetNC(int x, int y, DWORD color);
+    void PixelSetAA(double fx, double fy, DWORD color);
 
     DWORD PixelGet(int x, int y) const;
     DWORD PixelGetNC(int x, int y) const;
+    DWORD PixelGetAA(double fx, double fy) const;
 
     int Width() const { return width_; }
     int Height() const { return height_; }

@@ -66,6 +66,11 @@ void CImage32::PixelSet(int x, int y, DWORD color, BYTE alpha) {
     ::PixelSet(ptr, &color, alpha);
 }
 
+void CImage32::PixelSetNC(int x, int y, DWORD color) {
+    DWORD *ptr = (DWORD *) PixelAddressNC(x, y);
+    *ptr = color;
+}
+
 void CImage32::PixelSetAA(double fx, double fy, DWORD color) {
     int alpha_x = 255.0 * (fx - (int) fx);
     int alpha_y = 255.0 * (fy - (int) fy);
@@ -83,11 +88,6 @@ void CImage32::PixelSetAA(double fx, double fy, DWORD color) {
     PixelSet(fx + 1, fy + 1, color, alpha[3]);
 }
 
-void CImage32::PixelSetNC(int x, int y, DWORD color) {
-    DWORD *ptr = (DWORD *) PixelAddressNC(x, y);
-    *ptr = color;
-}
-
 DWORD CImage32::PixelGet(int x, int y) const {
     DWORD *ptr = (DWORD *) PixelAddress(x, y);
     if (ptr == NULL) {
@@ -99,6 +99,49 @@ DWORD CImage32::PixelGet(int x, int y) const {
 DWORD CImage32::PixelGetNC(int x, int y) const {
     DWORD *ptr = (DWORD *) PixelAddressNC(x, y);
     return *ptr;
+}
+
+DWORD CImage32::PixelGetAA(double fx, double fy) const {
+    int alpha_x = 255.0 * (fx - (int) fx);
+    int alpha_y = 255.0 * (fy - (int) fy);
+
+    int alpha[] = {
+        (255 - alpha_x) * (255 - alpha_y) / 255,
+        alpha_x * (255 - alpha_y) / 255,
+        (255 - alpha_x) * alpha_y / 255,
+        alpha_x * alpha_y / 255,
+    };
+
+    int r, g, b;
+    r = g = b = 0;
+
+    for (int y = 0; y < 2; y++) {
+        for (int x = 0; x < 2; x++) {
+            int sx = fx + x;
+            int sy = fy + y;
+
+            if (sx < 0) {
+                sx = width_ - (-sx) % width_ - 1;
+            } else {
+                sx = sx % width_;
+            }
+            if (sy < 0) {
+                sy = height_ - (-sy) % height_ - 1;
+            } else {
+                sy = sy % height_;
+            }
+
+            TARGB c;
+            c.ARGB = PixelGetNC(sx, sy);
+            AddARGB(&r, &g, &b, &c, alpha[y*2 + x]);
+        }
+    }
+
+    TARGB c;
+    c.R = r / 255;
+    c.G = g / 255;
+    c.B = b / 255;
+    return c.ARGB;
 }
 
 bool CImage32::PixelFill(int x, int y, int w, int h, DWORD color, BYTE alpha) {

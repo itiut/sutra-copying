@@ -11,5 +11,6 @@ void BltWaveFast(CImage32 *dst, const CImage32 *src, double rx, double ry, doubl
 void BltWave2(CImage32 *dst, const CImage32 *src, double rx, double ry, double nx, double ny, double t, double rx2, double ry2, double nx2, double ny2, double t2);
 
 void BltRot(CImage32 *dst, const CImage32 *src, double rad, double zoom);
+void BltRotAA(CImage32 *dst, const CImage32 *src, double rad, double zoom);
 
 #endif /* _EFFECTS_H_ */

@@ -1,3 +1,4 @@
+#include <cstdio>
 #include <cmath>
 #include "effects.h"
 
@@ -129,6 +130,45 @@ void BltRot(CImage32 *dst, const CImage32 *src, double rad, double zoom) {
             }
 
             DWORD pixel = src->PixelGet(sx, sy);
+            dst->PixelSet(x, y, pixel);
+        }
+        baseU += deltaYU;
+        baseV += deltaYV;
+    }
+}
+
+void BltRotAA(CImage32 *dst, const CImage32 *src, double rad, double zoom) {
+    int sw = src->Width();
+    int sh = src->Height();
+    int dw = dst->Width();
+    int dh = dst->Width();
+
+    double baseU = 0.0;
+    double baseV = 0.0;
+
+    double deltaXU = zoom * cos(rad);
+    double deltaXV = zoom * sin(rad);
+
+    double deltaYU = zoom * cos(rad + M_PI / 2.0);
+    double deltaYV = zoom * sin(rad + M_PI / 2.0);
+
+    for (int y = 0; y < dh; y++) {
+        for (int x = 0; x < dw; x++) {
+            double fx = (baseU + x * deltaXU);
+            double fy = (baseV + x * deltaXV);
+
+            if (fx < 0) {
+                fx = sw - fmod(-fx, sw);
+            } else {
+                fx = fmod(fx, sw);
+            }
+            if (fy < 0) {
+                fy = sh - fmod(-fy, sh);
+            } else {
+                fy = fmod(fy, sh);
+            }
+
+            DWORD pixel = src->PixelGetAA(fx, fy);
             dst->PixelSet(x, y, pixel);
         }
         baseU += deltaYU;
