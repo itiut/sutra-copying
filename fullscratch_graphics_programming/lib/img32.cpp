@@ -1,3 +1,4 @@
+#include <cstdio>
 #include <cstdlib>
 #include <algorithm>
 #include "img32.h"
@@ -281,7 +282,8 @@ bool CImage32::DrawLine(int x0, int y0, int x1, int y1, DWORD color) {
     if (y0 > height_ && y1 > height_) return false;
 
     if (std::abs(x0 - x1) > std::abs(y0 - y1)) {
-        double fy = y0, dy = 0;
+        double fy = y0;
+        double dy = 0.0;
         if (x0 != x1) {
             dy = (double) (y1 - y0) / (x1 - x0);
         }
@@ -296,7 +298,8 @@ bool CImage32::DrawLine(int x0, int y0, int x1, int y1, DWORD color) {
             PixelSet(x, fy, color);
         }
     } else {
-        double fx = x0, dx = 0;
+        double fx = x0;
+        double dx = 0.0;
         if (y0 != y1) {
             dx = (double) (x1 - x0) / (y1 - y0);
         }
@@ -309,6 +312,55 @@ bool CImage32::DrawLine(int x0, int y0, int x1, int y1, DWORD color) {
 
         for (int y = y0; y != y1; y += dy, fx += dx) {
             PixelSet(fx, y, color);
+        }
+    }
+
+    return true;
+}
+
+bool CImage32::DrawLineAA(int x0, int y0, int x1, int y1, DWORD color) {
+    if (x0 < 0 && x1 < 0) return false;
+    if (y0 < 0 && y1 < 0) return false;
+    if (x0 > width_ && x1 > width_) return false;
+    if (y0 > height_ && y1 > height_) return false;
+
+    if (std::abs(x0 - x1) > std::abs(y0 - y1)) {
+        double fy = y0;
+        double dy = 0.0;
+        if (x0 != x1) {
+            dy = (double) (y1 - y0) / (x1 - x0);
+        }
+
+        int dx = 1;
+        if (x1 < x0) {
+            dx = -1;
+            dy = -dy;
+        }
+
+        for (int x = x0; x != x1; x += dx, fy += dy) {
+            int a1 = 255.0 * (fy - (int) fy);
+            int a0 = 255 - a1;
+            PixelSet(x, fy, color, a0);
+            PixelSet(x, fy + 1, color, a1);
+        }
+    } else {
+        double fx = x0;
+        double dx = 0.0;
+        if (y0 != y1) {
+            dx = (double) (x1 - x0) / (y1 - y0);
+        }
+
+        int dy = 1;
+        if (y1 < y0) {
+            dy = -1;
+            dx = -dx;
+        }
+
+        for (int y = y0; y != y1; y += dy, fx += dx) {
+            int a1 = 255.0 * (fx - (int) fx);
+            int a0 = 255 - a1;
+            PixelSet(fx, y, color, a0);
+            PixelSet(fx + 1, y, color, a1);
         }
     }
 

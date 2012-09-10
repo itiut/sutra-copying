@@ -53,6 +53,7 @@ public:
     bool DrawXLine(int x0, int x1, int y, DWORD color, BYTE alpha);
     bool DrawXLineAA(double x0, double x1, int y, DWORD color, BYTE alpha);
     bool DrawLine(int x0, int y0, int x1, int y1, DWORD color);
+    bool DrawLineAA(int x0, int y0, int x1, int y1, DWORD color);
 };
 
 #endif /* _IMG32_H_ */
