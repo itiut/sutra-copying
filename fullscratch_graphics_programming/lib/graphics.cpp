@@ -398,6 +398,58 @@ bool DrawTriangle(CImage32 *dst, TTrianglePos *tri, DWORD color, BYTE alpha) {
     return true;
 }
 
+bool DrawTriangleAA(CImage32 *dst, TTrianglePos *tri, DWORD color, BYTE alpha) {
+    int min_y = std::min(tri->p[0].y, std::min(tri->p[1].y, tri->p[2].y));
+    int max_y = std::max(tri->p[0].y, std::max(tri->p[1].y, tri->p[2].y));
+
+    if (max_y < 0 || dst->Height() <= min_y) return false;
+
+    min_y = std::max(min_y, 0);
+    max_y = std::min(max_y, dst->Height() - 1);
+
+    CPolySide ps;
+    for (int i = 0; i < 3; i++) {
+        FPOINT *v1 = &tri->p[i];
+        FPOINT *v2 = &tri->p[(i+1) % 3];
+        ps.Add(v1, v2);
+    }
+
+    for (int y = min_y; y <= max_y; y++) {
+        double edges[2];
+        int edges_num = 0;
+
+        for (int i = 0; i < ps.Num(); i++) {
+            const double kVertexDiff = 0.125;
+            double x;
+            if (ps.IntersectoinX(i, y + kVertexDiff, &x)) {
+                edges[edges_num++] = x;
+                if (edges_num > 2) {
+                    return false;
+                }
+            }
+        }
+        if (edges_num != 2) {
+            continue;
+        }
+
+        double first = edges[0];
+        double last = edges[1];
+        if (first == last) {
+            continue;
+        }
+        if (last < first) {
+            std::swap(first, last);
+        }
+        first = std::max(first, 0.0);
+        last = std::min(last, dst->Width() - 1.0);
+
+        dst->DrawXLineAA(first, last, y, color, alpha);
+    }
+
+    return true;
+}
+
+
 bool DrawPolygon(CImage32 *dst, CPolyVertex *buf, DWORD color, BYTE alpha) {
     if (buf->Num() < 3) {
         return false;

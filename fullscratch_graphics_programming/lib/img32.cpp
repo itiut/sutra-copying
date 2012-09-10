@@ -231,6 +231,49 @@ bool CImage32::DrawXLine(int x0, int x1, int y, DWORD color, BYTE alpha) {
     return true;
 }
 
+bool CImage32::DrawXLineAA(double x0, double x1, int y, DWORD color, BYTE alpha) {
+    if (y < 0 || height_ <= y) {
+        return false;
+    }
+    if (x1 < x0) {
+        std::swap(x0, x1);
+    }
+    if (x1 < 0 || width_ <= x0) {
+        return false;
+    }
+
+    x0 = std::max(x0, 0.0);
+    x1 = std::min(x1, width_ - 1.0);
+
+    int ix0 = x0;
+    int ix1 = x1;
+
+    if (ix0 == ix1) {
+        int aa = 255.0 * (x1 - x0);
+        PixelSet(ix0, y, color, aa * alpha / 255);
+        return true;
+    }
+
+    DWORD *addr = (DWORD *) PixelAddress(ix0, y);
+
+    for (int x = ix0; x <= ix1; x++, addr++) {
+        int alpha2 = alpha;
+
+        if (x == ix0) {
+            int aa = 255 - (int) (255.0 * (x0 - ix0));
+            alpha2 = aa * alpha / 255;
+        } else if (x == ix1) {
+            int aa = 255.0 * (x1 - ix1);
+            alpha2 = aa * alpha / 255;
+        }
+
+        ::PixelSet(addr, &color, alpha2);
+    }
+
+    return true;
+}
+
+
 bool CImage32::DrawLine(int x0, int y0, int x1, int y1, DWORD color) {
     if (x0 < 0 && x1 < 0) return false;
     if (y0 < 0 && y1 < 0) return false;

@@ -51,6 +51,7 @@ public:
     bool Blt(int dx, int dy, const CImage32 *src);
 
     bool DrawXLine(int x0, int x1, int y, DWORD color, BYTE alpha);
+    bool DrawXLineAA(double x0, double x1, int y, DWORD color, BYTE alpha);
     bool DrawLine(int x0, int y0, int x1, int y1, DWORD color);
 };
 

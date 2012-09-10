@@ -35,6 +35,21 @@ void Test_DrawTriangleAASlow () {
     dib.WriteBitmap("output_DrawTriangleAASlow.bmp");
 }
 
+void Test_DrawTriangleAA() {
+    CImageDIB dib(300, 300);
+    dib.PixelFill(0, 0, 300, 300, 0xffffffff, 255);
+
+    TTrianglePos tri;
+    tri.p[0].x =  30; tri.p[0].y = 180;
+    tri.p[1].x = 180; tri.p[1].y =  60;
+    tri.p[2].x = 270; tri.p[2].y = 270;
+    DrawTriangleAA(&dib, &tri, 0xff000000, 255);
+
+    dib.WriteBitmap("output_DrawTriangleAA.bmp");
+}
+
+
 int main () {
     Test_DrawTriangleAASlow();
+    Test_DrawTriangleAA();
 }
