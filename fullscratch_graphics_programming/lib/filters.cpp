@@ -1,5 +1,6 @@
 #include "bitmap.h"
 #include "img32.h"
+#include "graphics.h"
 #include "filters.h"
 
 bool Mosaic(CImage32 *dst, const CImage32 *src, int x, int y, int w, int h, int size) {
@@ -94,6 +95,36 @@ bool Blur(CImage32 *dst, const CImage32 *src, int size) {
                     b += color.B;
                     counter++;
                 }
+            }
+
+            color.R = r / counter;
+            color.G = g / counter;
+            color.B = b / counter;
+
+            dst->PixelSet(x, y, color.ARGB);
+        }
+    }
+
+    return true;
+}
+
+bool MotionBlur(CImage32 *dst, const CImage32 *src, int size, double rad) {
+    CVector2 v(1.0, 0.0);
+    v.Rotate(rad);
+
+    for (int y = 0; y < src->Height(); y++) {
+        for (int x = 0; x < src->Width(); x++) {
+            int r, g, b, counter;
+            r = g = b = counter = 0;
+
+            TARGB color;
+
+            for (int i = 0; i < size; i++) {
+                color.ARGB = src->PixelGet(x + v.x * i, y + v.y * i);
+                r += color.R;
+                g += color.G;
+                b += color.B;
+                counter++;
             }
 
             color.R = r / counter;
