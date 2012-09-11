@@ -14,4 +14,8 @@ bool GaussBlurXSlow(CImage32 *dst, const CImage32 *src, double ar);
 bool GaussBlurYSlow(CImage32 *dst, const CImage32 *src, double ar);
 bool GaussBlurSlow(CImage32 *dst, const CImage32 *src, double ar, bool x_direction);
 
+bool GaussBlurX(CImage32 *dst, const CImage32 *src, double ar);
+bool GaussBlurY(CImage32 *dst, const CImage32 *src, double ar);
+bool GaussBlur(CImage32 *dst, const CImage32 *src, double ar, bool x_direction);
+
 #endif /* _FILTERS_H_ */

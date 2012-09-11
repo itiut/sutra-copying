@@ -1,4 +1,4 @@
-#include <cstdio>
+#include <cstdlib>
 #include "bitmap.h"
 #include "img32.h"
 #include "graphics.h"
@@ -188,5 +188,54 @@ bool GaussBlurSlow(CImage32 *dst, const CImage32 *src, double ar, bool x_directi
         }
     }
 
+    return true;
+}
+
+bool GaussBlurX(CImage32 *dst, const CImage32 *src, double ar) {
+    return GaussBlur(dst, src, ar, true);
+}
+
+bool GaussBlurY(CImage32 *dst, const CImage32 *src, double ar) {
+    return GaussBlur(dst, src, ar, false);
+}
+
+bool GaussBlur(CImage32 *dst, const CImage32 *src, double ar, bool x_direction) {
+    int range = ar * 3;
+    double *gauss_table = new double[range + 1];
+
+    for (int i = 0; i <= range; i++) {
+        gauss_table[i] = exp(- i * i / (2 * ar * ar)) / sqrt(2.0 * M_PI * ar * ar);
+    }
+
+    for (int y = 0; y < src->Height(); y++) {
+        for (int x = 0; x < src->Width(); x++) {
+            int r, g, b;
+            r = g = b = 0;
+
+            TARGB color;
+
+            for (int i = -range; i <= range; i++) {
+                if (x_direction) {
+                    color.ARGB = src->PixelGet(x + i, y);
+                } else {
+                    color.ARGB = src->PixelGet(x, y + i);
+                }
+
+                double gauss = gauss_table[abs(i)];
+
+                r += gauss * color.R;
+                g += gauss * color.G;
+                b += gauss * color.B;
+            }
+
+            color.R = r;
+            color.G = g;
+            color.B = b;
+
+            dst->PixelSet(x, y, color.ARGB);
+        }
+    }
+
+    delete[] gauss_table;
     return true;
 }
