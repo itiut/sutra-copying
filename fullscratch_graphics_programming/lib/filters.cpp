@@ -1,3 +1,4 @@
+#include <cstdio>
 #include "bitmap.h"
 #include "img32.h"
 #include "graphics.h"
@@ -139,6 +140,49 @@ bool MotionBlur(CImage32 *dst, const CImage32 *src, int size, double rad, int qu
             color.R = r / counter;
             color.G = g / counter;
             color.B = b / counter;
+
+            dst->PixelSet(x, y, color.ARGB);
+        }
+    }
+
+    return true;
+}
+
+bool GaussBlurXSlow(CImage32 *dst, const CImage32 *src, double ar) {
+    return GaussBlurSlow(dst, src, ar, true);
+}
+
+bool GaussBlurYSlow(CImage32 *dst, const CImage32 *src, double ar) {
+    return GaussBlurSlow(dst, src, ar, false);
+}
+
+bool GaussBlurSlow(CImage32 *dst, const CImage32 *src, double ar, bool x_direction) {
+    for (int y = 0; y < src->Height(); y++) {
+        for (int x = 0; x < src->Width(); x++) {
+            int r, g, b;
+            r = g = b = 0;
+
+            TARGB color;
+
+            int range = ar * 3;
+
+            for (int i = -range; i <= range; i++) {
+                if (x_direction) {
+                    color.ARGB = src->PixelGet(x + i, y);
+                } else {
+                    color.ARGB = src->PixelGet(x, y + i);
+                }
+
+                double gauss = exp(- i * i / (2 * ar * ar)) / sqrt(2.0 * M_PI * ar * ar);
+
+                r += gauss * color.R;
+                g += gauss * color.G;
+                b += gauss * color.B;
+            }
+
+            color.R = r;
+            color.G = g;
+            color.B = b;
 
             dst->PixelSet(x, y, color.ARGB);
         }
