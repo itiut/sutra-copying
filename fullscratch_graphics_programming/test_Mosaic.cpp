@@ -1,4 +1,4 @@
-/* -*- compile-command: "g++ -Wall -Wextra -O2 test_Mosaic.cpp lib/img32.cpp lib/imgdib.cpp lib/blt.cpp lib/filters.cpp" -*- */
+/* -*- compile-command: "g++ -Wall -Wextra -O2 test_Mosaic.cpp lib/img32.cpp lib/imgdib.cpp lib/blt.cpp lib/graphics.cpp lib/filters.cpp -lm" -*- */
 #include <iostream>
 #include <cstdio>
 #include <cstdlib>
