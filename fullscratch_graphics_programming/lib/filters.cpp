@@ -77,3 +77,32 @@ bool MosaicA(CImage32 *dst, const CImage32 *src, int x, int y, int w, int h, int
 
     return true;
 }
+
+bool Blur(CImage32 *dst, const CImage32 *src, int size) {
+    for (int y = 0; y < src->Height(); y++) {
+        for (int x = 0; x < src->Width(); x++) {
+            int r, g, b, counter;
+            r = g = b = counter = 0;
+
+            TARGB color;
+
+            for (int dy = -size; dy <= size; dy++) {
+                for (int dx = -size; dx <= size; dx++) {
+                    color.ARGB = src->PixelGet(x + dx, y + dy);
+                    r += color.R;
+                    g += color.G;
+                    b += color.B;
+                    counter++;
+                }
+            }
+
+            color.R = r / counter;
+            color.G = g / counter;
+            color.B = b / counter;
+
+            dst->PixelSet(x, y, color.ARGB);
+        }
+    }
+
+    return true;
+}
