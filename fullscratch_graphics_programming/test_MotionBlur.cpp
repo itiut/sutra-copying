@@ -10,7 +10,7 @@ void Test_MotionBlue(const char *filename) {
     CImageDIB src(filename);
     CImageDIB dst(src.Width(), src.Height());
 
-    MotionBlur(&dst, &src, 10, 1.0);
+    MotionBlur(&dst, &src, 10, 1.0, 4);
 
     dst.WriteBitmap("output_MotionBlur.bmp");
 }

@@ -8,6 +8,6 @@ bool Mosaic(CImage32 *dst, const CImage32 *src, int x, int y, int w, int h, int 
 bool MosaicA(CImage32 *dst, const CImage32 *src, int x, int y, int w, int h, int size);
 
 bool Blur(CImage32 *dst, const CImage32 *src, int size);
-bool MotionBlur(CImage32 *dst, const CImage32 *src, int size, double rad);
+bool MotionBlur(CImage32 *dst, const CImage32 *src, int size, double rad, int quality);
 
 #endif /* _FILTERS_H_ */

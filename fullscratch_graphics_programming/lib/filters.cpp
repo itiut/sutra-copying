@@ -108,9 +108,12 @@ bool Blur(CImage32 *dst, const CImage32 *src, int size) {
     return true;
 }
 
-bool MotionBlur(CImage32 *dst, const CImage32 *src, int size, double rad) {
+bool MotionBlur(CImage32 *dst, const CImage32 *src, int size, double rad, int quality) {
     CVector2 v(1.0, 0.0);
     v.Rotate(rad);
+
+    double dx = v.x / quality;
+    double dy = v.y / quality;
 
     for (int y = 0; y < src->Height(); y++) {
         for (int x = 0; x < src->Width(); x++) {
@@ -119,12 +122,18 @@ bool MotionBlur(CImage32 *dst, const CImage32 *src, int size, double rad) {
 
             TARGB color;
 
-            for (int i = 0; i < size; i++) {
-                color.ARGB = src->PixelGet(x + v.x * i, y + v.y * i);
+            double sx = x - v.x * size;
+            double sy = y - v.y * size;
+
+            for (int i = 0, i_end = size * 2 * quality; i < i_end; i++) {
+                color.ARGB = src->PixelGet(sx, sy);
                 r += color.R;
                 g += color.G;
                 b += color.B;
                 counter++;
+
+                sx += dx;
+                sy += dy;
             }
 
             color.R = r / counter;
