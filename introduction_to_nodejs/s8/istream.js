@@ -2,8 +2,8 @@ var path = require('path');
 var fs = require('fs');
 
 var filePath = path.join(__dirname, 'test.txt');
-
 var readStream = fs.createReadStream(filePath, {encoding: 'utf8'});
+
 readStream.on('data', function(data) {
   console.log(data);
 });
