@@ -27,34 +27,71 @@ document.addEventListener('DOMContentLoaded', function() {
     return context;
   }
 
-  function loadShader(type, shaderSource) {
-    var shader = gl.createShader(type);
+  // function loadShader(type, shaderSource) {
+  //   var shader = gl.createShader(type);
+  //   gl.shaderSource(shader, shaderSource);
+  //   gl.compileShader(shader);
+
+  //   if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+  //     alert('Error compiling shader:' + gl.getShaderInfoLog(shader));
+  //     gl.deleteShader(shader);
+  //     return null;
+  //   }
+  //   return shader;
+  // }
+
+  function loadShaderFromDOM(id) {
+    var shaderScript = document.getElementById(id);
+    if (!shaderScript) {
+      return null;
+    }
+
+    var shaderSource = '';
+    var currentChild = shaderScript.firstChild;
+    while (currentChild) {
+      if (currentChild.nodeType == 3) {
+        shaderSource += currentChild.textContent;
+      }
+      currentChild = currentChild.nextSibling;
+    }
+
+    var shader;
+    if (shaderScript.type == "x-shader/x-fragment") {
+      shader = gl.createShader(gl.FRAGMENT_SHADER);
+    } else if (shaderScript.type == "x-shader/x-vertex") {
+      shader = gl.createShader(gl.VERTEX_SHADER);
+    } else {
+      return null;
+    }
+
     gl.shaderSource(shader, shaderSource);
     gl.compileShader(shader);
 
     if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
-      alert('Error compiling shader:' + gl.getShaderInfoLog(shader));
-      gl.deleteShader(shader);
+      alert(gl.getShaderInfoLog(shader));
       return null;
     }
     return shader;
   }
 
   function setupShaders() {
-    var vertexShaderSource =
-          'attribute vec3 aVertexPosition;             \n' +
-          'void main() {                               \n' +
-          '  gl_Position = vec4(aVertexPosition, 1.0); \n' +
-          '}                                           \n';
+    // var vertexShaderSource =
+    //       'attribute vec3 aVertexPosition;             \n' +
+    //       'void main() {                               \n' +
+    //       '  gl_Position = vec4(aVertexPosition, 1.0); \n' +
+    //       '}                                           \n';
 
-    var fragmentShaderSource =
-          'precision mediump float;                   \n' +
-          'void main() {                              \n' +
-          '  gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0); \n' +
-          '}                                          \n';
+    // var fragmentShaderSource =
+    //       'precision mediump float;                   \n' +
+    //       'void main() {                              \n' +
+    //       '  gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0); \n' +
+    //       '}                                          \n';
 
-    var vertexShader = loadShader(gl.VERTEX_SHADER, vertexShaderSource);
-    var fragmentShader = loadShader(gl.FRAGMENT_SHADER, fragmentShaderSource);
+    // var vertexShader = loadShader(gl.VERTEX_SHADER, vertexShaderSource);
+    // var fragmentShader = loadShader(gl.FRAGMENT_SHADER, fragmentShaderSource);
+
+    var vertexShader = loadShaderFromDOM('shader-vs');
+    var fragmentShader = loadShaderFromDOM('shader-fs');
 
     shaderProgram = gl.createProgram();
     gl.attachShader(shaderProgram, vertexShader);

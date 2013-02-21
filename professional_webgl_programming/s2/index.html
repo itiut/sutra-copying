@@ -2,6 +2,19 @@
   <head>
     <meta charset="uff-8">
     <title>WebGL Example</title>
+    <script id="shader-vs" type="x-shader/x-vertex">
+      attribute vec3 aVertexPosition;
+      void main() {
+        gl_Position = vec4(aVertexPosition, 1.0);
+      }
+    </script>
+    <script id="shader-fs" type="x-shader/x-fragment">
+      precision mediump float;
+      void main() {
+        gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0);
+      }
+    </script>
+    <script src="../webgl-debug.js"></script>
     <script src="2-1.js"></script>
   </head>
   <body>
