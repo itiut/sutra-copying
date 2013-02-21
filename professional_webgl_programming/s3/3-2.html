@@ -1,0 +1,27 @@
+<html lang="ja">
+  <head>
+    <meta charset="uff-8">
+    <title>3-2</title>
+    <script id="shader-vs" type="x-shader/x-vertex">
+      attribute vec3 aVertexPosition;
+      attribute vec4 aVertexColor;
+      varying vec4 vColor;
+      void main() {
+        vColor = aVertexColor;
+        gl_Position = vec4(aVertexPosition, 1.0);
+      }
+    </script>
+    <script id="shader-fs" type="x-shader/x-fragment">
+      precision mediump float;
+      varying vec4 vColor;
+      void main() {
+        gl_FragColor = vColor;
+      }
+    </script>
+    <script src="../webgl-debug.js"></script>
+    <script src="3-2.js"></script>
+  </head>
+  <body>
+    <canvas id="myGLCanvas" width="500" height="500"></canvas>
+  </body>
+</html>
