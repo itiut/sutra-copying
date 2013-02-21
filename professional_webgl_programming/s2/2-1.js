@@ -135,7 +135,8 @@ document.addEventListener('DOMContentLoaded', function() {
   if (!canvas) {
     return;
   }
-  gl = createGLContext(canvas);
+  // gl = createGLContext(canvas);
+  gl = WebGLDebugUtils.makeDebugContext(createGLContext(canvas));
   setupShaders();
   setupBuffers();
   gl.clearColor(0.0, 0.0, 0.0, 1.0);
