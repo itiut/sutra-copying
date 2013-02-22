@@ -78,6 +78,10 @@ document.addEventListener('DOMContentLoaded', function() {
     gl.useProgram(shaderProgram);
 
     shaderProgram.vertexPositionAttribute = gl.getAttribLocation(shaderProgram, 'aVertexPosition');
+    shaderProgram.vertexColorAttribute = gl.getAttribLocation(shaderProgram, 'aVertexColor');
+
+    gl.enableVertexAttribArray(shaderProgram.vertexPositionAttribute);
+    gl.enableVertexAttribArray(shaderProgram.vertesColorAttribute);
   }
 
   function setupBuffers() {
@@ -123,9 +127,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
     gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, vertexBuffer.positionSize, gl.FLOAT, false, 16, 0);
     gl.vertexAttribPointer(shaderProgram.vertexColorAttribute, vertexBuffer.colorSize, gl.UNSIGNED_BYTE, true, 16, 12);
-
-    gl.enableVertexAttribArray(shaderProgram.vertexPositionAttribute);
-    gl.enableVertexAttribArray(shaderProgram.vertesColorAttribute);
 
     gl.drawArrays(gl.TRIANGLES, 0, vertexBuffer.numberOfItems);
   }
