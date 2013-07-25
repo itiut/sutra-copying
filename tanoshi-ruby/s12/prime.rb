@@ -2,9 +2,8 @@ def prime?(num)
   if num < 2
     return false
   end
-  num_i = num.to_i
-  (2...num_i).each do |i|
-    if num_i % i == 0
+  (2..Math.sqrt(num)).each do |i|
+    if num % i == 0
       return false
     end
   end
