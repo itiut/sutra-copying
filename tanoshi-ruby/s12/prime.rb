@@ -3,7 +3,7 @@ def prime?(num)
     return false
   end
   num_i = num.to_i
-  2.upto(num_i - 1) do |i|
+  (2...num_i).each do |i|
     if num_i % i == 0
       return false
     end
