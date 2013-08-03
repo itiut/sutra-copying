@@ -56,8 +56,8 @@ my_any :: (a -> Bool) -> [a] -> Bool
 my_any p = foldr (\x y -> p x || y) False
 
 my_takeWhile :: (a -> Bool) -> [a] -> [a]
-my_takeWhile _ [] = []          -- Exception: Non-exhaustive patterns in function my_takeWhile
-my_takewhile p (x:xs) | p x       = x : my_takeWhile p xs
+my_takeWhile _ [] = []
+my_takeWhile p (x:xs) | p x       = x : (my_takeWhile p xs)
                       | otherwise = []
 
 my_dropWhile :: (a -> Bool) -> [a] -> [a]
@@ -69,8 +69,8 @@ my_dropWhile p (x:xs) | p x       = my_dropWhile p xs
 my_map :: (a -> b) -> [a] -> [b]
 my_map f = foldr (\x xs -> (f x):xs) []
 
--- my_filer :: (a -> Bool) -> [a] -> [a]
--- my_filter p = foldr (\x xs -> if p x then (x:xs) else xs) []
+my_filter :: (a -> Bool) -> [a] -> [a]
+my_filter p = foldr (\x xs -> if p x then (x:xs) else xs) []
 
 -- exe4
 dec2int :: [Int] -> Int
