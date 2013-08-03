@@ -1,31 +1,24 @@
--- 3.4
-double x = x + x
-quadruple x = double (double x)
-
-factrial n = product [1..n]
-average ns = sum ns `div` length ns
+-- 4.6
+add' :: Int -> Int -> Int
+add' x y = x + y
 
 
--- 3.6 exercises
--- 1
-a1 = 2^3 * 4
-a2 = 2 * 3 + 4 * 5
-a3 = 2 + 3 * 4^5
+-- 4.11 exercises
+-- 2
+second :: [a] -> a
+second xs = head (tail xs)
 
--- 3
-n = a `div` length xs
-  where
-    a = 10
-    xs = [1, 2, 3, 4, 5]
+swap :: (a, b) -> (b, a)
+swap (x, y) = (y, x)
 
--- 4
-my_last_rec [x] = x
-my_last_rec (x:xs) = my_last_rec xs
+pair :: a -> b -> (a, b)
+pair x y = (x, y)
 
-my_last xs = xs !! (length xs - 1)
+double :: Num a => a -> a
+double x = x * 2
 
--- 5
-my_init_rec [x] = []
-my_init_rec (x:xs) = [x] ++ my_init_rec xs
+palindrome :: Eq a => [a] -> Bool
+palindrome xs = reverse xs == xs
 
-my_init xs = take (length xs - 1) xs
+twice :: (a -> a) -> a -> a
+twice f x = f (f x)
