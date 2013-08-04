@@ -97,7 +97,7 @@ binary_and1 a b | a == b = b
 
 -- 5
 binary_and2 :: Bool -> Bool -> Bool
-binary_and2 a b | a == True = b
+binary_and2 a b | a = b
                 | otherwise = False
 
 -- 6
