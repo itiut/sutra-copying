@@ -10,7 +10,7 @@ int main() {
         err_sys("creat error for foo");
     }
     umask(S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH);
-    if (creat("bar", RWRWRW) < 0) {
+    if (creat("bar", RWRWRW) == -1) {
         err_sys("creat error for bar");
     }
 }
