@@ -4,34 +4,46 @@ module Staff
   RSpec.describe Authenticator do
     describe '#authenticate' do
 
-      example '正しいパスワードならtrueを返す' do
+      example '正しいパスワードなら[true, nil]を返す' do
         m = build(:staff_member)
-        expect(described_class.new(m).authenticate('pw')).to be_truthy
+        ok, error_type = described_class.new(m).authenticate('pw')
+        expect(ok).to be_truthy
+        expect(error_type).to be_nil
       end
 
-      example '誤ったパスワードならfalseを返す' do
+      example '誤ったパスワードなら[false, :invalid_email_or_password]を返す' do
         m = build(:staff_member)
-        expect(described_class.new(m).authenticate('xy')).to be_falsey
+        ok, error_type = described_class.new(m).authenticate('xy')
+        expect(ok).to be_falsey
+        expect(error_type).to eq(:invalid_email_or_password)
       end
 
-      example 'パスワード未設定ならfalseを返す' do
+      example 'パスワード未設定なら[false, :invalid_email_or_password]を返す' do
         m = build(:staff_member, password: nil)
-        expect(described_class.new(m).authenticate(nil)).to be_falsey
+        ok, error_type = described_class.new(m).authenticate(nil)
+        expect(ok).to be_falsey
+        expect(error_type).to eq(:invalid_email_or_password)
       end
 
-      example '停止フラグが立っていればfalseを返す' do
+      example '停止フラグが立っていれば[false, :suspended]を返す' do
         m = build(:staff_member, suspended: true)
-        expect(described_class.new(m).authenticate('pw')).to be_falsey
+        ok, error_type = described_class.new(m).authenticate('pw')
+        expect(ok).to be_falsey
+        expect(error_type).to eq(:suspended)
       end
 
-      example '開始前ならfalseを返す' do
+      example '開始前なら[false, :not_yet_active]を返す' do
         m = build(:staff_member, start_date: Date.tomorrow)
-        expect(described_class.new(m).authenticate('pw')).to be_falsey
+        ok, error_type = described_class.new(m).authenticate('pw')
+        expect(ok).to be_falsey
+        expect(error_type).to eq(:not_yet_active)
       end
 
-      example '終了後ならfalseを返す' do
+      example '終了後なら[false, :expired]を返す' do
         m = build(:staff_member, end_date: Date.today)
-        expect(described_class.new(m).authenticate('pw')).to be_falsey
+        ok, error_type = described_class.new(m).authenticate('pw')
+        expect(ok).to be_falsey
+        expect(error_type).to eq(:expired)
       end
     end
   end
