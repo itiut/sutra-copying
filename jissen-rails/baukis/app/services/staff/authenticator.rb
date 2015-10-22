@@ -1,18 +1,10 @@
-class Staff::Authenticator
-  def initialize(staff_member)
-    @staff_member = staff_member
-  end
-
+class Staff::Authenticator < Authenticator
   def authenticate(raw_password)
-    if @staff_member.nil? ||
-       @staff_member.hashed_password.blank? ||
-       BCrypt::Password.new(@staff_member.hashed_password) != raw_password
-      return false, :invalid_email_or_password
-    end
-
-    return false, :suspended if @staff_member.suspended?
-    return false, :not_yet_active if Date.today < @staff_member.start_date
-    return false, :expired if @staff_member.end_date && @staff_member.end_date <= Date.today
+    ok, error_type = super(raw_password)
+    return false, error_type unless ok
+    return false, :suspended if @user.suspended?
+    return false, :not_yet_active if Date.today < @user.start_date
+    return false, :expired if @user.end_date && @user.end_date <= Date.today
     true
   end
 end
