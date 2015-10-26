@@ -19,15 +19,20 @@ class Staff::SessionsController < Staff::Base
     if ok
       session[:staff_member_id] = staff_member.id
       session[:last_access_time] = Time.current
+      staff_member.events.create!(type: 'logged_in')
       flash.notice = 'ログインしました。'
       redirect_to staff_root_url
     else
+      staff_member.events.create!(type: 'rejected') if error_type == :suspended
       flash.now.alert = authentication_message_for(error_type)
       render action: 'new'
     end
   end
 
-  def destory
+  def destroy
+    if current_staff_member
+      current_staff_member.events.create!(type: 'logged_out')
+    end
     session.delete(:staff_member_id)
     flash.notice = 'ログアウトしました。'
     redirect_to staff_root_url
