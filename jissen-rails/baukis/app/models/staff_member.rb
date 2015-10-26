@@ -1,9 +1,20 @@
 class StaffMember < ActiveRecord::Base
-  include NameHelper
   include EmailHelper
+  include NameHelper
   include PasswordHelper
 
   has_many :events, class_name: 'StaffEvent', dependent: :destroy
+
+  validates :start_date, date: {
+              after_or_equal_to: Date.new(2000, 1, 1),
+              before: -> (_) { 1.year.from_now.to_date },
+              allow_blank: false
+            }
+  validates :end_date, date: {
+              after: :start_date,
+              before: -> (_) { 1.year.from_now.to_date},
+              allow_blank: true
+            }
 
   def active?
     !suspended? &&
