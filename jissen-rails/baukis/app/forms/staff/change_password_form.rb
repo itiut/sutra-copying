@@ -6,9 +6,8 @@ class Staff::ChangePasswordForm
   validates :new_password, presence: true, confirmation: true
 
   validate do
-    unless Staff::Authenticator.new(object).authenticate(current_password)
-      errors.add(:current_password, :wrong)
-    end
+    ok, _ = Staff::Authenticator.new(object).authenticate(current_password)
+    errors.add(:current_password, :wrong) unless ok
   end
 
   def save
