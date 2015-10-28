@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.shared_examples 'email_helper' do
+RSpec.shared_examples 'email_holder' do
   describe 'before_validation' do
     describe '.email' do
       example 'email前後のスペースを除去' do

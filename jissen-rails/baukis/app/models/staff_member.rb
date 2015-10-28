@@ -1,7 +1,7 @@
 class StaffMember < ActiveRecord::Base
-  include EmailHelper
-  include NameHelper
-  include PasswordHelper
+  include EmailHolder
+  include PasswordHolder
+  include PersonalNameHolder
 
   has_many :events, class_name: 'StaffEvent', dependent: :destroy
 

@@ -1,12 +1,12 @@
-require 'nkf'
-
-module NameHelper
+module PersonalNameHolder
   extend ActiveSupport::Concern
 
   HUMAN_NAME_REGEXP = /\A[\p{hiragana}\p{katakana}\u{30fc}\p{alpha}]+\z/
   KATAKANA_REGEXP = /\A[\p{katakana}\u{30fc}]+\z/
 
   included do
+    include StringNormalizer
+
     before_validation do
       self.family_name = normalize_as_name(family_name)
       self.given_name = normalize_as_name(given_name)
@@ -22,15 +22,5 @@ module NameHelper
 
   def full_name
     family_name + given_name
-  end
-
-  private
-
-  def normalize_as_name(text)
-    NKF.nkf('-w -Z1', text).strip if text
-  end
-
-  def normalize_as_furigana(text)
-    NKF.nkf('-w -Z1 --katakana', text).strip if text
   end
 end

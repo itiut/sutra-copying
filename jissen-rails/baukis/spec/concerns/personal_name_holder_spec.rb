@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.shared_examples 'name_helper' do
+RSpec.shared_examples 'personal_name_holder' do
   describe 'before_validation' do
     example 'family_name_kanaに含まれるひらがなをカタカナに変換' do
       member = create(described_class.name.underscore.to_sym, family_name_kana: 'てすと')

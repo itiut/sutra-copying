@@ -1,6 +1,6 @@
 class Administrator < ActiveRecord::Base
-  include EmailHelper
-  include PasswordHelper
+  include EmailHolder
+  include PasswordHolder
 
   def active?
     !suspended?

@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.shared_examples 'password_helper' do
+RSpec.shared_examples 'password_holder' do
   describe '#password=' do
     example '文字列を与えると、hashed_passwordは長さ60の文字列になる' do
       member = described_class.new

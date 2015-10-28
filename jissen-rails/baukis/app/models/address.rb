@@ -1,4 +1,6 @@
 class Address < ActiveRecord::Base
+  include StringNormalizer
+
   belongs_to :customer
 
   PREFECTURE_NAMES = %w(
@@ -13,4 +15,14 @@ class Address < ActiveRecord::Base
     沖縄県
     日本国外
   )
+
+  before_validation do
+    self.postal_code = normalize_as_postal_code(postal_code)
+    self.city = normalize_as_name(city)
+    self.address1 = normalize_as_name(address1)
+    self.address2 = normalize_as_name(address2)
+  end
+
+  validates :postal_code, format: { with: /\A\d{7}\z/, allow_blank: true }
+  validates :prefecture, inclusion: { in: PREFECTURE_NAMES, allow_blank: true }
 end

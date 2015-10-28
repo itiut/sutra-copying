@@ -1,9 +1,9 @@
-require 'nkf'
-
-module EmailHelper
+module EmailHolder
   extend ActiveSupport::Concern
 
   included do
+    include StringNormalizer
+
     before_validation do
       self.email = normalize_as_email(email)
       self.email_for_index = email.downcase if email
@@ -18,11 +18,5 @@ module EmailHelper
         errors.delete(:email_for_idnex)
       end
     end
-  end
-
-  private
-
-  def normalize_as_email(text)
-    NKF.nkf('-w -Z1', text).strip if text
   end
 end

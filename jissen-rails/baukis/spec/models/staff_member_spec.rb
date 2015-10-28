@@ -1,9 +1,9 @@
 require 'rails_helper'
 
 RSpec.describe StaffMember, type: :model do
-  include_examples 'email_helper'
-  include_examples 'name_helper'
-  include_examples 'password_helper'
+  it_behaves_like 'email_holder'
+  it_behaves_like 'password_holder'
+  it_behaves_like 'personal_name_holder'
 
   describe 'validation' do
     describe '.start_date' do
