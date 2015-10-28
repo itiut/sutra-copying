@@ -1,0 +1,11 @@
+<%= f.fields_for :customer, f.object.customer do |ff| %>
+  <% p = CustomerFormPresenter.new(ff, self) %>
+  <% p.with_options(required: true) do |q| %>
+    <%= q.text_field_block(:email, 'メールアドレス', size: 32) %>
+    <%= q.password_field_block(:password, 'パスワード', size: 32) %>
+    <%= q.full_name_block(:family_name, :given_name, '氏名') %>
+    <%= q.full_name_block(:family_name_kana, :given_name_kana, 'フリガナ') %>
+  <% end %>
+  <%= p.birthday_field_block(:birthday, '生年月日') %>
+  <%= p.gender_block_field %>
+<% end %>

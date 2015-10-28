@@ -1,0 +1,13 @@
+<% p = CustomerPresenter.new(customer, self) %>
+<tr>
+  <td><%= p.full_name %></td>
+  <td><%= p.full_name_kana %></td>
+  <td class="email"><%= p.email %></td>
+  <td class="date"><%= p.birthday %></td>
+  <td><%= p.gender %></td>
+  <td class="actions">
+    <%= link_to '詳細', [:staff, customer] %> |
+    <%= link_to '編集', [:edit, :staff, customer] %> |
+    <%= link_to '削除', [:staff, customer], method: :delete, date: { confirm: '本当に削除しますか？' } %>
+  </td>
+</tr>
