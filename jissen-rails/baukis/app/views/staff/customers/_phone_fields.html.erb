@@ -1,0 +1,7 @@
+<%= f.fields_for :phones, phone, index: phone_counter do |ff| %>
+  <li>
+    <%= ff.text_field(:number) %>
+    <%= ff.check_box(:primary) %>
+    <%= ff.label(:primary, '優先') %>
+  </li>
+<% end %>

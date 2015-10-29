@@ -8,4 +8,10 @@
   <% end %>
   <%= p.birthday_field_block(:birthday, '生年月日') %>
   <%= p.gender_block_field %>
+  <div class="input-block">
+    <%= p.decorated_label(:personal_phones, '電話番号') %>
+    <ol>
+      <%= render partial: 'phone_fields', collection: p.object.personal_phones, as: :phone, locals: { f: ff } %>
+    </ol>
+  </div>
 <% end %>

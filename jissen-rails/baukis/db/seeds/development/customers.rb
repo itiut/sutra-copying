@@ -43,6 +43,9 @@ company_names = %w(OIAX ABC XYZ)
       birthday: 60.years.ago.advance(seconds: rand(40.years)).to_date,
       gender: j < 5 ? 'male' : 'female'
     )
+    if j.even?
+      c.personal_phones.create!(number: format('090-0000-%04d', i * 10 + j))
+    end
     c.create_home_address!(
       postal_code: format('%07d', rand(10_000_000)),
       prefecture: Address::PREFECTURE_NAMES.sample,
@@ -50,6 +53,9 @@ company_names = %w(OIAX ABC XYZ)
       address1: '開発1-2-3',
       address2: 'レイルズハイツ301号室'
     )
+    if j % 10 == 0
+      c.home_address.phones.create!(number: format('03-0000-%04d', i))
+    end
     if j % 3 == 0
       c.create_work_address!(
         postal_code: format('%07d', rand(10_000_000)),

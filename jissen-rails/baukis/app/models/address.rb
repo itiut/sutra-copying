@@ -2,6 +2,7 @@ class Address < ActiveRecord::Base
   include StringNormalizer
 
   belongs_to :customer
+  has_many :phones, -> { order(:id) }, dependent: :destroy, autosave: true
 
   PREFECTURE_NAMES = %w(
     北海道

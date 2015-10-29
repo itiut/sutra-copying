@@ -7,4 +7,10 @@
     <%= q.text_field_block(:address1, '町域、番地など', size: 40) %>
   <% end %>
   <%= p.text_field_block(:address2, '建物名、部屋番号など', size: 40) %>
+  <div class="input-block">
+    <%= p.decorated_label(:phones, '自宅電話番号') %>
+    <ol>
+      <%= render partial: 'phone_fields', collection: p.object.phones, as: :phone, locals: { f: ff } %>
+    </ol>
+  </div>
 <% end %>

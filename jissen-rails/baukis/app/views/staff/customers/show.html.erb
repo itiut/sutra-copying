@@ -35,6 +35,14 @@
       <th>更新日時</th>
       <td><%= p1.updated_at %></td>
     </tr>
+    <tr>
+      <th>個人電話番号(1)</th>
+      <td><%= p1.personal_phones[0] %></td>
+    </tr>
+    <tr>
+      <th>個人電話番号(2)</th>
+      <td><%= p1.personal_phones[1] %></td>
+    </tr>
     <% if @customer.home_address %>
       <% p2 = AddressPresenter.new(@customer.home_address, self) %>
       <tr>
@@ -60,11 +68,19 @@
         <th>建物名、部屋番号など</th>
         <td><%= p2.address2 %></td>
       </tr>
+      <tr>
+        <th>自宅電話番号(1)</th>
+        <td><%= p2.phones[0] %></td>
+      </tr>
+      <tr>
+        <th>自宅電話番号(2)</th>
+        <td><%= p2.phones[1] %></td>
+      </tr>
     <% end %>
     <% if @customer.work_address %>
       <% p3 = AddressPresenter.new(@customer.work_address, self) %>
       <tr>
-        <th colspan="2">自宅情報</th>
+        <th colspan="2">勤務先情報</th>
       </tr>
       <tr>
         <th>会社名</th>
@@ -93,6 +109,14 @@
       <tr>
         <th>建物名、部屋番号など</th>
         <td><%= p3.address2 %></td>
+      </tr>
+      <tr>
+        <th>勤務先電話番号(1)</th>
+        <td><%= p3.phones[0] %></td>
+      </tr>
+      <tr>
+        <th>勤務先電話番号(2)</th>
+        <td><%= p3.phones[1] %></td>
       </tr>
     <% end %>
   </table>
