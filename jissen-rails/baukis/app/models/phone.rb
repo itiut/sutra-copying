@@ -11,6 +11,7 @@ class Phone < ActiveRecord::Base
 
   before_create do
     self.customer = address.customer if address
+    self.last_four_digits = number_for_index[-4, 4] if number_for_index
   end
 
   validates :number, presence: true, format: { with: /\A\+?\d+(-\d+)*\z/, allow_blank: true }
