@@ -17,3 +17,5 @@ RUN ./configure \
 
 COPY nginx /etc/init.d/
 RUN chmod +x /etc/init.d/nginx
+
+EXPOSE 80

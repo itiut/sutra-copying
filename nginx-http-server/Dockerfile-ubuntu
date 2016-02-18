@@ -19,3 +19,5 @@ RUN ./configure \
 COPY nginx /etc/init.d/
 RUN chmod +x /etc/init.d/nginx \
   && update-rc.d nginx defaults
+
+EXPOSE 80
