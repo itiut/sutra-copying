@@ -9,7 +9,7 @@
 ### END INIT INFO
 
 set -e
-PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin
+PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 DESC="nginx daemon"
 NAME=nginx
 DAEMON=/usr/local/nginx/sbin/$NAME
