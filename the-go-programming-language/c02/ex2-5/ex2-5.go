@@ -1,4 +1,4 @@
-package main
+package popcount
 
 func PopCount(x uint64) int {
 	count := 0
