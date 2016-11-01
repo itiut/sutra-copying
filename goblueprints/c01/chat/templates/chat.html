@@ -12,6 +12,7 @@
   <ul id="messages"></ul>
   Chat application with WebSocket
   <form id="chatbox">
+    {{.UserData.name}}:<br>
     <textarea></textarea>
     <input type="submit" value="send">
   </form>
@@ -29,7 +30,7 @@
           console.error('no WebSocket connection');
           return false;
         }
-        socket.send(msgBox.val());
+        socket.send(JSON.stringify({'Message': msgBox.val()}));
         msgBox.val('');
         return false;
       });
@@ -41,7 +42,13 @@
           console.log('connection finished');
         };
         socket.onmessage = function(e) {
-          messages.append($('<li>').text(e.data));
+          var msg = JSON.parse(e.data);
+          messages.append(
+            $('<li>').append(
+              $('<strong>').text(msg.Name + ': '),
+              $('<span>').text(msg.Message)
+            )
+          );
         };
       }
     });

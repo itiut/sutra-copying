@@ -4,3 +4,6 @@ a.out
 # ruby
 vendor/
 Gemfile.lock
+
+# direnv
+.envrc
