@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Upload</title>
+  <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
+</head>
+<body>
+  <div class="container">
+    <div class="page-hader">
+      <div class="h1">Upload avatar image file</div>
+    </div>
+    <form action="/uploader" role="form" enctype="multipart/form-data" method="post">
+      <input type="hidden" name="userid" value="{{.UserData.userid}}">
+      <div class="form-group">
+        <label for="message">Select file</label>
+        <input type="file" name="avatarFile">
+      </div>
+      <input type="submit" value="upload" class="btn">
+    </form>
+  </div>
+</body>
+</html>

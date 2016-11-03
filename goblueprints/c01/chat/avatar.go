@@ -1,43 +1,55 @@
 package main
 
 import (
-	"crypto/md5"
 	"errors"
-	"fmt"
-	"io"
-	"strings"
+	"path/filepath"
 )
 
 var ErrNoAvatarURL = errors.New("chat: failed to get avatar URL")
 
 type Avatar interface {
-	GetAvatarURL(c *client) (string, error)
+	GetAvatarURL(ChatUser) (string, error)
+}
+
+type TryAvatars []Avatar
+
+func (a TryAvatars) GetAvatarURL(u ChatUser) (string, error) {
+	for _, avatar := range a {
+		if url, err := avatar.GetAvatarURL(u); err == nil {
+			return url, nil
+		}
+	}
+	return "", ErrNoAvatarURL
 }
 
 type AuthAvatar struct{}
 
-var UserAuthAvatar AuthAvatar
+var UseAuthAvatar AuthAvatar
 
-func (_ AuthAvatar) GetAvatarURL(c *client) (string, error) {
-	if url, ok := c.userData["avatar_url"]; ok {
-		if urlStr, ok := url.(string); ok {
-			return urlStr, nil
-		}
+func (_ AuthAvatar) GetAvatarURL(u ChatUser) (string, error) {
+	url := u.AvatarURL()
+	if url == "" {
+		return "", ErrNoAvatarURL
 	}
-	return "", ErrNoAvatarURL
+	return url, nil
 }
 
 type GravatarAvatar struct{}
 
-var UserGravatar GravatarAvatar
+var UseGravatar GravatarAvatar
 
-func (_ GravatarAvatar) GetAvatarURL(c *client) (string, error) {
-	if email, ok := c.userData["email"]; ok {
-		if emailStr, ok := email.(string); ok {
-			m := md5.New()
-			io.WriteString(m, strings.ToLower(emailStr))
-			return fmt.Sprintf("//www.gravatar.com/avatar/%x", m.Sum(nil)), nil
-		}
+func (_ GravatarAvatar) GetAvatarURL(u ChatUser) (string, error) {
+	return "//www.gravatar.com/avatar/" + u.UniqueID(), nil
+}
+
+type FileSystemAvatar struct{}
+
+var UseFileSystemAvatar FileSystemAvatar
+
+func (_ FileSystemAvatar) GetAvatarURL(u ChatUser) (string, error) {
+	matches, err := filepath.Glob(filepath.Join("avatars", u.UniqueID()+"*"))
+	if err != nil || len(matches) == 0 {
+		return "", ErrNoAvatarURL
 	}
-	return "", ErrNoAvatarURL
+	return "/" + matches[0], nil
 }
