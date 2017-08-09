@@ -1,4 +1,5 @@
 # c/c++
+*.o
 a.out
 
 # ruby

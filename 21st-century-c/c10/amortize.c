@@ -1,0 +1,42 @@
+#include <math.h>
+#include <stdio.h>
+#include "amortize.h"
+
+double amortize(double amt, double rate, double inflation, int months,
+                int selloff_month, double extra_payoff, int verbose,
+                double *interest_pv, double *duration, double *monthly_payment) {
+    double total_interest = 0;
+    *interest_pv = 0;
+    double mrate = rate / 1200;
+
+    // The monthyl rate is fixed, but the proportion going to interest changes.
+    *monthly_payment = amt * mrate / (1 - pow(1 + mrate, -months));
+    if (verbose) {
+        printf("Your total monthly payment: %g\n\n", *monthly_payment);
+    }
+    int end_month = (selloff_month && selloff_month < months) ? selloff_month : months;
+    if (verbose) {
+        printf("yr/mon\tPrinc.\tInt.\t| PV Princ.\tPV Int.\tRatio\n");
+    }
+    int m = 0;
+    for (; m < end_month && amt > 0; m++) {
+        amt -= extra_payoff;
+        double interest_payment = amt * mrate;
+        double principal_payment = *monthly_payment - interest_payment;
+        if (amt < 0) {
+            principal_payment = interest_payment = 0;
+        }
+        amt -= principal_payment;
+        double deflator = pow(1 + inflation / 100, -m / 12.0);
+        *interest_pv += interest_payment * deflator;
+        total_interest += interest_payment;
+        if (verbose) {
+            printf("%i\%i\t%7.5g\t%7.5g\t| %7.5g\t %7.5g\t%7.5g\n",
+                   m / 12, m - 12 * (m / 12) + 1, principal_payment, interest_payment,
+                   principal_payment * deflator, interest_payment, deflator,
+                   principal_payment / interest_payment);
+        }
+        *duration = m / 12.0;
+        return total_interest;
+    }
+}
