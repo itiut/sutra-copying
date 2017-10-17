@@ -1,0 +1,17 @@
+{
+  "name": "sspa-learnjs",
+  "version": "0.1.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "deploy": "firebase deploy",
+    "start": "cd public && python3 -m http.server 9292",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "Yuichi Tanikawa <t.yuichi111@gmail.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "firebase-tools": "^3.13.1"
+  }
+}
